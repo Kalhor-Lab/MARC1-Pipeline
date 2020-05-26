@@ -184,9 +184,9 @@ for (file1 in files1) {
         }
         
         #chop 4 characters of input file name to construct output names
-        basisrf = substr(inputrf, 0, nchar(inputrf)-4) #chop off last 4 characters, i.e., file extension
-        basisrf = tail(strsplit(basisrf, split = "/")[[1]], n = 1)    #Remove the address in the file
-        basisrf = strsplit(basisrf, split = "_")[[1]][1]    #adjust the name
+        basisrf = substr(inputrf, 0, nchar(inputrf)-4)                  #chop off last 4 characters, i.e., file extension
+        basisrf = tail(strsplit(basisrf, split = "/")[[1]], n = 1)      #Remove the address in the file
+        basisrf = strsplit(basisrf, split = "_")[[1]][1]                #adjust the name
         
         #save cleaned data to files
         mothers.save = mothers[!grepl("rs", names(mothers),)]
