@@ -58,7 +58,7 @@ for (file1 in files1) {
         rdthresh  = 0.0 	                		# threshold for minimal read count for individual data points (either mother or child #reads)
         totalrdthresh = 0 #Reza: to be re-assigned based on data  # threshold for minimal total read count to consider barcodes at all
         slope 	= -2.0 						# slope for log-likelihood cutoff
-        offset	= -1.0			 			# offset for log-likelihood cutoff
+        offset	= -2.0			 			# offset for log-likelihood cutoff
         
         
         # read unfiltered data
