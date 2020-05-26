@@ -275,7 +275,10 @@ for (file1 in files1) {
     pairs <- NULL; pairs <- true_pairs
     pairs$V4 <- NA;                                     # For each ID, this column indicates its percentage among all IDs in that sample
     pairs$V5 <- NA;                                     # For each spacer, this column indicates its percentage in that hgRNA in that sample
-    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.70 * 100                       # This is reminiscent of how I narrowed the number of barcodes in each sample. But for 2-sequencing_error_adjustment1 the maximum expected number for all samples combined was used. Here it will be tailored to each sample.
+    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.70 * 100                       # Setting up the maximum number of barcodes/IDs that each sample can have. No sample can have more than 60.
+    CCOFF_pair <- 10                                    # Read count cutoff is the minimum number of reads that a pair needs to have to be considered. 
+    pairs <- pairs[-pairs[,3] < CCOFF_pair,]             # Removing pairs with less than CCOFF_pair reads.
+    
     for(bc in levels(as.factor(as.vector(pairs[,1])))) {
         if ( sum(subset(pairs, V1 == bc)[,3]) / sum(pairs[,3]) * 100 >= PCOFF_bc) {
             cutoff <- max(pairs[,3][pairs[,1] == bc])
@@ -291,6 +294,7 @@ for (file1 in files1) {
     for(bc in levels(as.factor(as.vector(pairs[,1])))) {
         pairs[,6][pairs[,1] == bc] <- which(levels(as.factor(as.vector(pairs[,1]))) == bc)
     }
+    pairs <- pairs[!duplicated(pairs$V6),]
     
     pairs <- pairs[,c(6, 1:5)]
     colnames(pairs) <- c('#', 'ID', 'SP', 'count', 'ID%inAll', 'SP%inID')
