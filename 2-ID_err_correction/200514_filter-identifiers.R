@@ -194,5 +194,5 @@ for (file1 in files1) {
         
         if (nrow(children) > 1) {children.order = children[with(children, order(-rs)),]} else {children.order <- children}
         children.save = children.order[!grepl("rs", names(children.order),)]
-        #write.table(children.save, paste(basisrf, "_errbc.txt", sep=""), sep="\t", quote=F, row.names=T, col.names = FALSE)
+        #write.table(children.save, paste(basisrf, "_errID.txt", sep=""), sep="\t", quote=F, row.names=T, col.names = FALSE)
     }
