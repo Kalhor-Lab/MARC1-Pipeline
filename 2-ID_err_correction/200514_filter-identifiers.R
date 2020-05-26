@@ -105,7 +105,7 @@ for (file1 in files1) {
                 data.freq = data.manyrds[data.manyrds$rs < fracthresh*newmoth$rs,]
         
                 #select subset of potential children based on sequence similarity
-                potkids = data.freq[stringdist(newmoth.bc, rownames(data.freq), method="lv") <= seqthresh,]                    #Reza, "hamming" would've been an alternative to "lv" but I'll use that for spacers only.
+                potkids = data.freq[stringdist(newmoth.bc, rownames(data.freq), method="lv") <= seqthresh,]
         
                 #get just read count data of current mother and potential children (without rowsums)
                 rdcnt.moth = newmoth[!grepl("rs", names(newmoth),)]
