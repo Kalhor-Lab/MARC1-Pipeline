@@ -97,7 +97,7 @@ for (file1 in files1) {
         rdthresh  = 0.0   	                # threshold for minimal read count for individual data points (either mother or child #reads)
         totalrdthresh = 0                   # threshold for minimal total read count to consider barcodes at all. RK: to be re-assigned based on data
         slope 	= -2.0 						# slope for log-likelihood cutoff
-        offset	= -1.0			 			# offset for log-likelihood cutoff
+        offset	= -2.0			 			# offset for log-likelihood cutoff
         
         
         # load unfiltered data and adjust format
@@ -275,7 +275,7 @@ for (file1 in files1) {
     pairs <- NULL; pairs <- true_pairs
     pairs$V4 <- NA;                                     # For each ID, this column indicates its percentage among all IDs in that sample
     pairs$V5 <- NA;                                     # For each spacer, this column indicates its percentage in that hgRNA in that sample
-    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.75 * 100                       # This is reminiscent of how I narrowed the number of barcodes in each sample. But for 2-sequencing_error_adjustment1 the maximum expected number for all samples combined was used. Here it will be tailored to each sample.
+    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.70 * 100                       # This is reminiscent of how I narrowed the number of barcodes in each sample. But for 2-sequencing_error_adjustment1 the maximum expected number for all samples combined was used. Here it will be tailored to each sample.
     for(bc in levels(as.factor(as.vector(pairs[,1])))) {
         if ( sum(subset(pairs, V1 == bc)[,3]) / sum(pairs[,3]) * 100 >= PCOFF_bc) {
             cutoff <- max(pairs[,3][pairs[,1] == bc])
