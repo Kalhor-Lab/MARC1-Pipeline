@@ -277,6 +277,7 @@ for (file1 in files1) {
         pairs[pairs$V1 == "TACACCTGCA",1] <- "GGCCCCTACA"                           # It turns out that because PB7 line barcode GGCCCCTACA matches the end of the reverse amplification primer, the primer can bind the GGCCCC sequence and make it appear the barcode is TACACCTGCA (end of the actual barcode truncated to the post-barcode sequence of the construct).
         pairs <- aggregate(V3~V1+V2, pairs, sum)
     }
+    pairs <- pairs[order(pairs$V1, -pairs$V3),]         #sorting pairs on barcode followed by descending frequency because some filtering operations above can disrupt order
     pairs$V4 <- NA;                                     # For each ID, this column indicates its percentage among all IDs in that sample
     pairs$V5 <- NA;                                     # For each spacer, this column indicates its percentage in that hgRNA in that sample
     PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.70 * 100                       # Setting up the maximum number of barcodes/IDs that each sample can have. No sample can have more than 60.
