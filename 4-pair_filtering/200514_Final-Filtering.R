@@ -213,7 +213,7 @@ if (sum(ext1) > 0) {
 # However, large deletion events can create hgRNAs that appear to have a new identifier sequence.
 # The following section of the code addresses these identifiers, attempting to merge them with their original parental identifier in the sample.
 
-# Custom string.dist function for 5' aligned measurement of distance based on hamming. First mis-match, will be the end of agreement between the strings.
+# Custom string.dist function for 5' aligned measurement of distance based on hamming. First mismatch, will be the end of agreement between the strings.
 stringdist.c <- function (a, b) {
   a <- as.character(a)
   b <- as.character(b)
