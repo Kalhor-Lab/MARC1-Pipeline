@@ -97,7 +97,7 @@ for (file1 in files1) {
         rdthresh  = 0.0   	                # threshold for minimal read count for individual data points (either mother or child #reads)
         totalrdthresh = 0                   # threshold for minimal total read count to consider barcodes at all. RK: to be re-assigned based on data
         slope 	= -2.0 						# slope for log-likelihood cutoff
-        offset	= -1.0			 			# offset for log-likelihood cutoff
+        offset	= -2.0			 			# offset for log-likelihood cutoff
         
         
         # load unfiltered data and adjust format
@@ -173,7 +173,7 @@ for (file1 in files1) {
                                         #calculate log-likelihoods for each observation
                                         logllh = vector(length = nrow(rdcnt.minthresh))
                                         for (j in 1:nminthresh) {		
-                                                logllh[j] = loge(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))
+                                                logllh[j] = loglink(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))      #loge command updated to loglink in May 2020.
                                         }
         
                                         #calculate mean log-likelihood
@@ -273,9 +273,17 @@ for (file1 in files1) {
     
     ### Making and writing the genotype file
     pairs <- NULL; pairs <- true_pairs
+    if (("TACACCTGCA" %in% pairs$V1)) {                                             # This manual adjustment should be applied to ALL PB7 line samples (reason in the line below).
+        pairs[pairs$V1 == "TACACCTGCA",1] <- "GGCCCCTACA"                           # It turns out that because PB7 line barcode GGCCCCTACA matches the end of the reverse amplification primer, the primer can bind the GGCCCC sequence and make it appear the barcode is TACACCTGCA (end of the actual barcode truncated to the post-barcode sequence of the construct).
+        pairs <- aggregate(V3~V1+V2, pairs, sum)
+    }
+    pairs <- pairs[order(pairs$V1, -pairs$V3),]         #sorting pairs on barcode followed by descending frequency because some filtering operations above can disrupt order
     pairs$V4 <- NA;                                     # For each ID, this column indicates its percentage among all IDs in that sample
     pairs$V5 <- NA;                                     # For each spacer, this column indicates its percentage in that hgRNA in that sample
-    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.75 * 100                       # This is reminiscent of how I narrowed the number of barcodes in each sample. But for 2-sequencing_error_adjustment1 the maximum expected number for all samples combined was used. Here it will be tailored to each sample.
+    PCOFF_bc <- NULL; PCOFF_bc <- 1/min(60,length(levels(as.factor(as.vector(pairs[,1])))))^1.70 * 100                       # Setting up the maximum number of barcodes/IDs that each sample can have. No sample can have more than 60.
+    CCOFF_pair <- 10                                    # Read count cutoff is the minimum number of reads that a pair needs to have to be considered. 
+    pairs <- pairs[-pairs[,3] < CCOFF_pair,]             # Removing pairs with less than CCOFF_pair reads.
+    
     for(bc in levels(as.factor(as.vector(pairs[,1])))) {
         if ( sum(subset(pairs, V1 == bc)[,3]) / sum(pairs[,3]) * 100 >= PCOFF_bc) {
             cutoff <- max(pairs[,3][pairs[,1] == bc])
@@ -291,6 +299,7 @@ for (file1 in files1) {
     for(bc in levels(as.factor(as.vector(pairs[,1])))) {
         pairs[,6][pairs[,1] == bc] <- which(levels(as.factor(as.vector(pairs[,1]))) == bc)
     }
+    pairs <- pairs[!duplicated(pairs$V6),]
     
     pairs <- pairs[,c(6, 1:5)]
     colnames(pairs) <- c('#', 'ID', 'SP', 'count', 'ID%inAll', 'SP%inID')

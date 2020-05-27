@@ -114,10 +114,10 @@ for (file1 in files1) {
   }
   
   bc_abundances <- aggregate(V3 ~ V1, pairs, sum);
-  for (i in 1:nrow(bc_abundances)) { if (bc_abundances[i,2] <= PRCOFF_pair) {pairs <- pairs[-which(pairs[,1] == bc_abundances[i,1], arr.ind = TRUE),]} }          # Eliminating pairs that don't meat the PRCOFF_pair criteria early on. Kian: Change this! "In this experiment, because some samples have so few barcodes, removal of single-read entries is harder"
+  for (i in 1:nrow(bc_abundances)) { if (bc_abundances[i,2] <= PRCOFF_pair) {pairs <- pairs[-which(pairs[,1] == bc_abundances[i,1], arr.ind = TRUE),]} }          # Eliminating pairs that don't meat the PRCOFF_pair criteria.
   
   pairs$V4 <- NA;                                     # For each entry, this column indicates its percentage among pairs with the same barcode in that sample
-  if(is.null(PFCOFF_bc)) {PFCOFF_bc <- 1/length(levels(as.factor(as.vector(pairs[,1]))))^PFCOFF_bc_exp} # Kian:Needs a new comment!       # "This is reminiscent of how I" narrowed the number of barcodes in each sample. But for 2-sequencing_error_adjustment1 the maximum expected number for all samples combined was used. Here it will be tailored to each sample.
+  if(is.null(PFCOFF_bc)) {PFCOFF_bc <- 1/length(levels(as.factor(as.vector(pairs[,1]))))^PFCOFF_bc_exp} #Establishing a cutoff for removing IDs/barcodes with low total read counts. These IDs, which can be a result of cross contamination, are present at lower frequency than IDs that truly belong to the sample. This filtering criteria carries out an adjustment based on total number of IDs so that the cutoff is lower the higher the total number of IDs is.
 
   ## [200305] : The "pairs" table has to be sorted properly for below steps to work appropriately (especially the one-base displacement adjustment). Therefore, the following command is added to make sure
   pairs <- pairs[order(pairs$V1, -pairs$V3),]   #sorting pairs on barcode followed by descending frequency because some filtering operations above can disrupt order
@@ -156,7 +156,6 @@ for (file1 in files1) {
           spacer_obs_trunc <- substr(spacer_obs, 5, nchar(spacer_obs))
           matching_spacers <- grep(spacer_obs_trunc, pairs$V2); 
           matching_spacers <- matching_spacers[matching_spacers %in% which(pairs$V1 == bc)]
-          # Kian: Or matching_spacers = grep(spacer_obs_trunc, pairs.bc$V2)?
           if(length(matching_spacers) > 1 ) {                     # Then the first one would be the parent and last one would be spacer_obs
             sink(file = filename_text, append = TRUE); cat(paste("Combined ", paste(pairs[matching_spacers[length(matching_spacers)],1:3], collapse = " "), " into ", paste(pairs[matching_spacers[1],1:3], collapse = " "), "\tfor one base displacement\n", sep = "")); sink();
             pairs[matching_spacers[1],3] <- pairs[matching_spacers[1],3] + pairs[matching_spacers[length(matching_spacers)],3]
@@ -214,7 +213,7 @@ if (sum(ext1) > 0) {
 # However, large deletion events can create hgRNAs that appear to have a new identifier sequence.
 # The following section of the code addresses these identifiers, attempting to merge them with their original parental identifier in the sample.
 
-# Custom string.dist function for 5' aligned measurement of distance based on hamming. First mis-match, will be the end of agreement between the strings.
+# Custom string.dist function for 5' aligned measurement of distance based on hamming. First mismatch, will be the end of agreement between the strings.
 stringdist.c <- function (a, b) {
   a <- as.character(a)
   b <- as.character(b)

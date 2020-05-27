@@ -56,9 +56,9 @@ for (file1 in files1) {
         seqthresh = 2 	                		      	# threshold of number of nucleotide differences between correct mothers and daughters
         fracthresh = 0.2        				# threshold of maximum read count fraction allowed for correct mothers and daughters
         rdthresh  = 0.0 	                		# threshold for minimal read count for individual data points (either mother or child #reads)
-        totalrdthresh = 0 #Reza: to be re-assigned based on data  # threshold for minimal total read count to consider barcodes at all
+        totalrdthresh = 0                   #RK: to be re-assigned based on data  # threshold for minimal total read count to consider barcodes at all
         slope 	= -2.0 						# slope for log-likelihood cutoff
-        offset	= -1.0			 			# offset for log-likelihood cutoff
+        offset	= -2.0			 			# offset for log-likelihood cutoff
         
         
         # read unfiltered data
@@ -105,7 +105,7 @@ for (file1 in files1) {
                 data.freq = data.manyrds[data.manyrds$rs < fracthresh*newmoth$rs,]
         
                 #select subset of potential children based on sequence similarity
-                potkids = data.freq[stringdist(newmoth.bc, rownames(data.freq), method="lv") <= seqthresh,]                    #Reza, "hamming" would've been an alternative to "lv" but I'll use that for spacers only.
+                potkids = data.freq[stringdist(newmoth.bc, rownames(data.freq), method="lv") <= seqthresh,]
         
                 #get just read count data of current mother and potential children (without rowsums)
                 rdcnt.moth = newmoth[!grepl("rs", names(newmoth),)]
@@ -138,7 +138,7 @@ for (file1 in files1) {
                                         #calculate log-likelihoods for each observation
                                         logllh = vector(length = nrow(rdcnt.minthresh))
                                         for (j in 1:nminthresh) {		
-                                                logllh[j] = loge(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))
+                                                logllh[j] = loglink(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))  #loge command updated to loglink in May 2020.
                                         }
         
                                         #calculate mean log-likelihood
@@ -184,9 +184,9 @@ for (file1 in files1) {
         }
         
         #chop 4 characters of input file name to construct output names
-        basisrf = substr(inputrf, 0, nchar(inputrf)-4) #chop off last 4 characters, i.e., file extension
-        basisrf = tail(strsplit(basisrf, split = "/")[[1]], n = 1)    #Remove the address in the file
-        basisrf = strsplit(basisrf, split = "_")[[1]][1]    #adjust the name
+        basisrf = substr(inputrf, 0, nchar(inputrf)-4)                  #chop off last 4 characters, i.e., file extension
+        basisrf = tail(strsplit(basisrf, split = "/")[[1]], n = 1)      #Remove the address in the file
+        basisrf = strsplit(basisrf, split = "_")[[1]][1]                #adjust the name
         
         #save cleaned data to files
         mothers.save = mothers[!grepl("rs", names(mothers),)]
@@ -194,5 +194,5 @@ for (file1 in files1) {
         
         if (nrow(children) > 1) {children.order = children[with(children, order(-rs)),]} else {children.order <- children}
         children.save = children.order[!grepl("rs", names(children.order),)]
-        #write.table(children.save, paste(basisrf, "_errbc.txt", sep=""), sep="\t", quote=F, row.names=T, col.names = FALSE)
+        #write.table(children.save, paste(basisrf, "_errID.txt", sep=""), sep="\t", quote=F, row.names=T, col.names = FALSE)
     }
