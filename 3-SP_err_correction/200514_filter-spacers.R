@@ -173,7 +173,7 @@ for (file1 in files1) {
                                         #calculate log-likelihoods for each observation
                                         logllh = vector(length = nrow(rdcnt.minthresh))
                                         for (j in 1:nminthresh) {		
-                                                logllh[j] = loge(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))
+                                                logllh[j] = loglink(dbetabinom(rdcnt.minthresh[j,2], rdcnt.minthresh[j,1], psuc[i], shape[i]))      #loge command updated to loglink in May 2020.
                                         }
         
                                         #calculate mean log-likelihood
