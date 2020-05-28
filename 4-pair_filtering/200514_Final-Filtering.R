@@ -1,3 +1,5 @@
+# This is a dummy change
+
 # This script starts with the sequencing error-corrected files in 3-SP_err_correction and:
 #     1) Filters out samples with low coverage (MinRd criterion)
 #     2) Filters out IDs with low coverage (PFCOFF_bc and PFCOFF_bc_exp criteria)
