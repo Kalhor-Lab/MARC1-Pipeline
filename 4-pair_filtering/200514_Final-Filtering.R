@@ -23,12 +23,6 @@ library(stringdist)
 ###################################################################################################################################
 Founder <- c('PB3', 'PB7')[2]                   # If the mouse under analysis is derived from the PB3 line, this variable should be set as "PB3"; if from the PB7 line, the variable should be set as "PB7"
 
-# Kian to Reza: these are the old comments
-# Some IDs cannot beFor each ID in orphan_barcodes, the data has to be manually investigated to identify its true ID. This may be done by comparing corresponding spacer and ID sequences to Founder reference, using other criteria.
-# Once the reference has been determined the following two vectors have to be populated. In the same order, trunc_barcodes should have the orphan barcode, trunc_barcodes_refs should have the corresponding founder/parent barcode.
-
-# Kian to Reza: these are the new comments
-# Optional:
 # In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). 
 # Run this code one time with no values in the following two vectors. Orphan barcodes will be printed in stdout. 
 # If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode. 
@@ -399,11 +393,9 @@ if (sum(ext2) > 0) {
   orphan_barcodes <- NULL;
   for(sampl in names(ext2)[ext2 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
-    # Kian
     # print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
     orphan_barcodes <- append(orphan_barcodes, nonparental_barcodes)
   }
-  # Kian
   # print("*********Above IDs have to be manually corrected*********")
   orphan_barcodes <- unique(orphan_barcodes)
 } else {
