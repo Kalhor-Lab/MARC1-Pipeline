@@ -37,7 +37,7 @@ for (file1 in files1) {
     ambig_pairs <- as.data.frame(matrix(nrow=1, ncol=ncol(raw_pairs)+1))                                 #This table will store the processed barcode-spacer counts for those pairs that either the spacer or the barcode have not been properly matched to their true barcode and spacers
     
     ## Consolidating the barcodes and separating them into different data frames
-    print(paste("         ", sample_name, "barcodes", Sys.time(), sep = " "))
+    print(paste("          ", sample_name, "barcodes", Sys.time(), sep = " "))
     for(pair in 1:nrow(raw_pairs)) {
         stringdist_result <- NULL; stringdist_result <- stringdist(raw_pairs[pair, 1], true_barcodes[,1], method = "lv") # This is done here so the computation intense operation of stringdist won't have to be repeated three times in identical fashion
         distance_barcode <- NULL; distance_barcode <- min(stringdist_result)

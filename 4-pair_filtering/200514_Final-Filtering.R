@@ -7,7 +7,7 @@
 #     6) Corrects early-cycle PCR mutations that can make a non-mutated spacer appear mutated (max_dist_spacer criterion)
 #     7) Corrects one-base displacements due to sequencing error
 #     8) Removes spacers with short reads.
-#     9) Corrects IDs (barcodes) that have been completely or partially deleted due to a large deletion (to the extent possible).
+#     9) Corrects IDs (barcodes) that have been completely or partially deleted due to a large deletion (***See VARIABLES TO BE SELECTED FOR EACH ANALYSIS***).
 #
 # The output of the script is 
 #     1) A table of high-confidence pairs and their counts.
@@ -22,6 +22,18 @@ library(stringdist)
 ################## VARIABLES TO BE SELECTED FOR EACH ANALYSIS #####################################################################
 ###################################################################################################################################
 Founder <- c('PB3', 'PB7')[2]                   # If the mouse under analysis is derived from the PB3 line, this variable should be set as "PB3"; if from the PB7 line, the variable should be set as "PB7"
+
+# Kian to Reza: these are the old comments
+# Some IDs cannot beFor each ID in orphan_barcodes, the data has to be manually investigated to identify its true ID. This may be done by comparing corresponding spacer and ID sequences to Founder reference, using other criteria.
+# Once the reference has been determined the following two vectors have to be populated. In the same order, trunc_barcodes should have the orphan barcode, trunc_barcodes_refs should have the corresponding founder/parent barcode.
+
+# Kian to Reza: these are the new comments
+# Optional:
+# In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). 
+# Run this code one time with no values in the following two vectors. Orphan barcodes will be printed in stdout. 
+# If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode. 
+trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
+trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 
 MinRd <- 2000                                   # Minimum total number of reads for a sample to be considered.
 PFCOFF_bc <- NULL                               # Read Percentage Cutoff is the the percentage of total reads in a sample that an identifier (bc) needs to have to be included. If not assigned here (is.null) this value will be assigned for each sample based on the total number of observed barcodes in it.
@@ -387,10 +399,12 @@ if (sum(ext2) > 0) {
   orphan_barcodes <- NULL;
   for(sampl in names(ext2)[ext2 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
-    print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
+    # Kian
+    # print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
     orphan_barcodes <- append(orphan_barcodes, nonparental_barcodes)
   }
-  print("*********Above IDs have to be manually corrected*********")
+  # Kian
+  # print("*********Above IDs have to be manually corrected*********")
   orphan_barcodes <- unique(orphan_barcodes)
 } else {
   if (sum(ext1) > 0) {print("After automated filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
@@ -406,11 +420,6 @@ if (sum(ext2) > 0) {
   hgRNA_length -> hgRNA_length_prefilter3
   
   ### correct the manually curated truncated barcodes in all loaded data
-  
-  #For each ID in orphan_barcodes, the data has to be manually investigated to identify its true ID. This may be done by comparing corresponding spacer and ID sequences to Founder reference, using other criteria.
-  # Once the reference has been determined the following two vectors have to be populated. In the same order, trunc_barcodes should have the orphan barcode, trunc_barcodes_refs should have the corresponding founder/parent barcode.
-  trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
-  trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
   if ( length(trunc_barcodes) > 0 ) {
     for(i in 1:length(trunc_barcodes)) {
       bc <- trunc_barcodes[i]
