@@ -471,11 +471,9 @@ for(sampl in names(alldata_bysample)) {
   write.table(table, paste(sampl, "_filteredpairs.txt", sep = ''), quote = FALSE , row.names = FALSE, col.names = FALSE, sep = "\t" )
 }
 
-
 #################################################################################################################################################################
 ################## REPORTING SOME STATISTICS AND GENERAL FEATURES OF THE SAMPLES ################################################################################
 #################################################################################################################################################################
-
 
 ######## BREAKDOWN OF BARCODES IN EACH SAMPLE AND EACH MOUSE ########
 ## Constructing a matrix that determines which barcodes have been observed in which samples. Rows are samples, columns are barcode, 1 denotes presence and 0 denotes absence of a particular barcode in a sample.
