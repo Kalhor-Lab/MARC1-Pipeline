@@ -381,7 +381,6 @@ if (sum(Orph1) > 0) {
 }
 
 ### Finding the IDs in each sample that are not observed in the Founder/Parent and were not accounted for with Filter 1 and Filter 2 above. 
-
 Orph2 <- NULL;
 for(sampl in names(alldata_bysample))  {
   temp <- length(which(!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent]][,1]));
@@ -423,8 +422,6 @@ if (sum(Orph2) > 0) {
         
         allspacers_bybarcode[[reference_bc]] <- sort(append(allspacers_bybarcode[[reference_bc]], allspacers_bybarcode[[bc]]))
         allspacers_bybarcode[[bc]] <- NULL
-        
-        #hgRNA_length <- hgRNA_length[-which(names(hgRNA_length) == bc)]                #200122: This is not necessary if hgRNA length is pre-loaded from a file.
         
         for(sampl in names(alldata_bybarcode_bysample[[bc]])) {
           alldata_bysample[[sampl]][which(alldata_bysample[[sampl]][,1] == bc),1] <- reference_bc
