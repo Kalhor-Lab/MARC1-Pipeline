@@ -68,7 +68,7 @@ PAM_pattern2 <- "GGTT" ; PAM_pattern2_offset <-  -1       # This pattern will be
 TSS_pattern1 <- "CCGG" ; TSS_pattern1_offset <-  +3       # This pattern will be used to extract the length of hgRNA, it marks the sequence before TSS. Offset determines the distance between the pattern and the actual point of interest, TSS here.
 Post_bc_pattern <- "GAATTC"                               # When this pattern is observed in a spacer, it is indicative of a large deletion. This EcoRI restriction site was used to clone the hgRNA backbone and is thus downstream of the hgRNA and its identifier.
 
-files1 <- system('ls ../3-*correction/*_truepairs.txt', intern = TRUE)                  # These are the processed barcode-spacer pair counts for all samples, first sequencing replicate
+files1 <- system('ls ../3-*correction/*_allpairs.txt', intern = TRUE)                  # These are the processed barcode-spacer pair counts for all samples.
 #if(Founder == "PB7") {                                                                  # Removing the file that corresponds to the founder not being used.
 #  files1 <- files1[-grep("PB3-founder", files1)]
 #} else if (Founder == "PB3") {
