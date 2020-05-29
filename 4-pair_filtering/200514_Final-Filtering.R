@@ -196,15 +196,15 @@ all_barcodes <- unique(all_barcodes)
 all_barcodes <- all_barcodes[order(all_barcodes)]
 
 ### Finding the IDs in each sample that were not observed in the Founder/Parent. 
-ext1 <- NULL;
+Orph1 <- NULL;
 for(sampl in names(alldata_bysample))  {
   temp <- length(which(!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]));
-  ext1 <- append(ext1, temp)
+  Orph1 <- append(Orph1, temp)
 }
-names(ext1) <- names(alldata_bysample)
+names(Orph1) <- names(alldata_bysample)
 
-if (sum(ext1) > 0) {
-  for(sampl in names(ext1)[ext1 > 0])  {
+if (sum(Orph1) > 0) {
+  for(sampl in names(Orph1)[Orph1 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
     #print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent): ", paste(nonparental_barcodes, collapse = ","), sep = " "))
   }
@@ -246,7 +246,7 @@ stringdist.c <- function (a, b) {
 }
 
 ### Barcode Corrections: Fixing the barcodes that have suffered a large deletion which has taken out most of the scaffold
-if (sum(ext1) > 0) {
+if (sum(Orph1) > 0) {
     # Filter 1: Fixing the barcodes that have suffered deletion and have a close counterpart in the parental barcodes
     all_barcodes -> all_barcodes_prefilter1
     all_pairs -> all_pairs_prefilter1
@@ -382,16 +382,16 @@ if (sum(ext1) > 0) {
 
 ### Finding the IDs in each sample that are not observed in the Founder/Parent and were not accounted for with Filter 1 and Filter 2 above. 
 
-ext2 <- NULL;
+Orph2 <- NULL;
 for(sampl in names(alldata_bysample))  {
   temp <- length(which(!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent]][,1]));
-  ext2 <- append(ext2, temp)
+  Orph2 <- append(Orph2, temp)
 }
-names(ext2) <- names(alldata_bysample)
+names(Orph2) <- names(alldata_bysample)
 
-if (sum(ext2) > 0) {
+if (sum(Orph2) > 0) {
   orphan_barcodes <- NULL;
-  for(sampl in names(ext2)[ext2 > 0])  {
+  for(sampl in names(Orph2)[Orph2 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
     # print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
     orphan_barcodes <- append(orphan_barcodes, nonparental_barcodes)
@@ -399,10 +399,10 @@ if (sum(ext2) > 0) {
   # print("*********Above IDs have to be manually corrected*********")
   orphan_barcodes <- unique(orphan_barcodes)
 } else {
-  if (sum(ext1) > 0) {print("After automated filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
+  if (sum(Orph1) > 0) {print("After automated filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
 }
 
-if (sum(ext2) > 0) {
+if (sum(Orph2) > 0) {
   # Filter 3: manual fixing
   all_barcodes -> all_barcodes_prefilter3
   all_pairs -> all_pairs_prefilter3
@@ -448,22 +448,22 @@ if (sum(ext2) > 0) {
   }
 }
 
-ext3 <- NULL;
+Orph3 <- NULL;
 for(sampl in names(alldata_bysample))  {
   temp <- length(which(!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent]][,1]));
-  ext3 <- append(ext3, temp)
+  Orph3 <- append(Orph3, temp)
 }
-names(ext3) <- names(alldata_bysample)
+names(Orph3) <- names(alldata_bysample)
 
-if (sum(ext3) > 0) {
+if (sum(Orph3) > 0) {
   orphan_barcodes <- NULL;
-  for(sampl in names(ext3)[ext3 > 0])  {
+  for(sampl in names(Orph3)[Orph3 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
     print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated or manual filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
   }
   print("*********Above IDs have to be manually corrected, return to Filter 3: manual fixing*********")
 } else {
-  if ( sum(ext1) > 0 & sum(ext2) > 0 ) {print("After automated and manual filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
+  if ( sum(Orph1) > 0 & sum(Orph2) > 0 ) {print("After automated and manual filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
 }
 
 ### Writing the filtered pairs into output files
