@@ -43,13 +43,13 @@ spurious_barcodes <- c("TAATACGACT")                      # The barcodes (IDs) t
 ################## IMPORTING REFERENCE hgRNA SEQUENCES AND CLASSIFICATIONS ###################################################################################################################################
 ######################################################################################################################################################################################
 ## Loading the mastertable
-mastertable <- read.table(file = paste("./INUSE_AllPB-BarcodesMasterTable.txt", sep = ""));
+mastertable <- read.table(file = paste("./INUSE_AllPB-BarcodesMasterTable.txt", sep = ""));                   # Based on manuscript supplementary tables
 rownames(mastertable) <- mastertable[,1]
 mastertable$Number <- 1:nrow(mastertable)
 hgRNA_length <- as.numeric(mastertable$Length); names(hgRNA_length) <- mastertable$Identifier                 # This vector will store the derived length of each hgRNA
 
 ## Loading barcode class table
-barcode_class <- read.table(paste("./INUSE-", Founder, "barcode_classification.txt", sep = ""), colClasses=c("character", "character"), header = TRUE);        # Table created in 170405_EmbryonicTimeCourse_Library1
+barcode_class <- read.table(paste("./INUSE-", Founder, "barcode_classification.txt", sep = ""), colClasses=c("character", "character"), header = TRUE);        # Based on manuscript supplementary tables
 rownames(barcode_class) <- barcode_class[,1]
 colnames(barcode_class)[1] <- "category"
 barcode_class[barcode_class[,2] == "Inactive",1] <- 0
