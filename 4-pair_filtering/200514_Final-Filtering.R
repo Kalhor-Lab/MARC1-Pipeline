@@ -69,11 +69,15 @@ TSS_pattern1 <- "CCGG" ; TSS_pattern1_offset <-  +3       # This pattern will be
 Post_bc_pattern <- "GAATTC"                               # When this pattern is observed in a spacer, it is indicative of a large deletion. This EcoRI restriction site was used to clone the hgRNA backbone and is thus downstream of the hgRNA and its identifier.
 
 files1 <- system('ls ../3-*correction/*_allpairs.txt', intern = TRUE)                  # These are the processed barcode-spacer pair counts for all samples.
-#if(Founder == "PB7") {                                                                  # Removing the file that corresponds to the founder not being used.
-#  files1 <- files1[-grep("PB3-founder", files1)]
-#} else if (Founder == "PB3") {
-#  files1 <- files1[-grep("PB7-founder", files1)]
-#}
+# Removing the file that corresponds to the founder not being used.
+if(Founder == "PB7" &&
+   (length(grep("PB3-founder", files1))) > 0) {
+  files1 <- files1[-grep("PB3-founder", files1)]
+} else if (Founder == "PB3" &&
+           (length(grep("PB7-founder", files1))) > 0) {
+  files1 <- files1[-grep("PB7-founder", files1)]
+}
+
 
 alldata_bysample <- list()                                                     #All of the data separated by sample in each object within the list
 alldata_bybarcode_bysample <- list()                                           #All of the data separated by barcode (i.e., gene) in each object within the list
