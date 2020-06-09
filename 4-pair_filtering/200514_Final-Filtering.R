@@ -21,8 +21,9 @@ library(stringdist)
 ###################################################################################################################################
 ################## VARIABLES TO BE SELECTED FOR EACH ANALYSIS #####################################################################
 ###################################################################################################################################
-Founder <- c('PB3', 'PB7')[2]                   # If the mouse under analysis is derived from the PB3 line, this variable should be set as "PB3"; if from the PB7 line, the variable should be set as "PB7"
-
+# If the mouse under analysis is derived from the PB3 line, Founder should be set as "PB3"; if from the PB7 line, the variable should be set as "PB7"
+# For PB3 samples, modify the number in brackets below to 1; otherwise, leave as is.
+Founder <- c('PB3', 'PB7')[2]                   
 # In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). 
 # Run this code one time with no values in the following two vectors. Orphan barcodes will be printed in stdout. 
 # If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode. 
