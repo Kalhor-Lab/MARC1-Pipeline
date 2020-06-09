@@ -160,7 +160,7 @@ for (file1 in files1) {
       }
       
       # [180315] module for consolidating one-base displacements due to sequencing error, such as "GAAACACCGGTAGCAAACGTTTGGACGTGGGGTTAGAGCTAGAAATAGCA" and "CAAAACACCGGTAGCAAACGTTTGGACGTGGGGTTAGAGCTAGAAATAGC" that create an erroneous mutant spacer
-      if (nrow(pairs.bc) > 1) {
+      if (nrow(subset(pairs, V1 == bc)) > 1) {
         for (spacer_obs in pairs.bc$V2[length(pairs.bc$V2):2]) {
           spacer_obs_trunc <- substr(spacer_obs, 5, nchar(spacer_obs))
           matching_spacers <- grep(spacer_obs_trunc, pairs$V2); 
