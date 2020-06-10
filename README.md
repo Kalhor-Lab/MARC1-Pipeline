@@ -82,7 +82,7 @@ The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencin
 9) Corrects IDs (orphan barcodes) that have been completely or partially deleted due to a large deletion.
 This code needs three data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_, _INUSE-PB3barcode_classification.txt_ and _INUSE-PB7barcode_classification.txt_
 
-Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. The 
+Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. 
 
 
 **PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
