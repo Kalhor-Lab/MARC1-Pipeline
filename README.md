@@ -98,3 +98,8 @@ trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', 
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 ```
 
+# Technical troubleshooting
+
+## Blat versions
+
+Operating system updates may render the versions of blat provided here and used in step 1, out of date. The most up to date versions can be downloaded directly from http://hgdownload.soe.ucsc.edu/admin/exe/. 
