@@ -70,11 +70,21 @@ For each sample, this step generates:
   
 ## 4 Filtering identifier-spacer pairs & reporting on mutation levels
 
+The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencing error-corrected files in 3-SP_err_correction (including the PB3 and PB7 founders) and performs the following:
+1) Filters out samples with low coverage (MinRd criterion)
+2) Filters out IDs with low coverage (PFCOFF_bc and PFCOFF_bc_exp criteria)
+3) Filters out pairs with low read counts (PFCOFF_pair and PRCOFF_pair criteria)
+4) Corrects known PCR or sequencing artifacts that are unique to MARC1 samples
+5) Corrects template-switching during PCR
+6) Corrects early-cycle PCR mutations that can make a non-mutated spacer appear mutated (max_dist_spacer criterion)
+7) Corrects one-base displacements due to sequencing error
+8) Removes spacers with short reads.
+9) Corrects IDs (orphan barcodes) that have been completely or partially deleted due to a large deletion.
+This code needs three data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_, _INUSE-PB3barcode_classification.txt_ and _INUSE-PB7barcode_classification.txt_
+
 Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. The 
 
-  ```  
-  $ cd ../4-pair_filtering
-  ```
+
 **PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
 
 Change the at the top of "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
@@ -90,6 +100,7 @@ For PB3:
   
 Then run:
   ```
+  $ cd ../4-pair_filtering
   $ Rscript 200514_Final-filtering.R
   ```
 **Truncated barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode and run the code again. 
