@@ -1,8 +1,9 @@
+ 
 # MARC1 analysis pipeline
 
 This is a pipeline for analysis of MARC1 genotyping data, originally described in [Developmental barcoding of whole mouse via homing CRISPR](https://science.sciencemag.org/content/361/6405/eaat9804.long) and detailed in a forthcoming Nature Protocols paper. It was designed to run on a Unix-based system, and has been tested on OSX and Fedora 31. 
 
-The pipeleline compiles paired-end reads and filters sequencing errors to prepare the output of Illumina sequencing data for genotyping or more in-depth barcoding analysis. It runs entirely from the terminal and relies on a combination of Perl, the R programming language, and a small number of specific R packages.
+The pipeline compiles paired-end reads and filters sequencing errors to prepare the output of Illumina sequencing data for genotyping or more in-depth barcoding analysis. It runs entirely from the terminal and relies on a combination of Perl, the R programming language, and a small number of specific R packages.
 
 ### Required software
 
@@ -23,7 +24,7 @@ The pipeline is composed of 4 sequential analysis parts. Each step is run from w
 * /4-pair_filtering 
 
 ## Testing the pipeline
-For testing, there are two founder files supplied in 0-raw_dataPB. The entire pipeline can be run with those files to ensure software setup is accurate and complete. They are also used for analysis of non-test data, so ensure they are present and correct for all subsequent analysis runs as well.
+For testing, there are two founder files supplied in 0-raw_data_PB. The entire pipeline can be run with those files to ensure software setup is accurate and complete. They are also used for analysis of newly generated data and thus it is important that they are present and correct for all subsequent analysis runs.
 
 # Running the pipeline
 
@@ -58,8 +59,9 @@ This step is requires a commitment of system resources; we typically run this an
 
 For each sample, this step generates: 
   * _[sample]\_genotypes.txt_  - lists each identifier and the most common associated spacer, useful for genotyping applications
-  * _[sample]\_allpairs.txt_  - lists all identifier-spacer pairs with observation counts without subjective filtering; this is useful for downstream analysis applications
-  * _[sample]\_ambigpairs.txt_ - 
+  * _[sample]\_truepairs.txt_ - lists all identifier-spacer pairs that were confidently assigned to an identifier-spacer group. Column 3 denotes the observed frequency of that pair. 
+  * _[sample]\_ambigpairs.txt_ - lists all identifier-spacer pairs that could not be confidently assigned to an identifier-spacer group. Column 4 of this file denotes this source of ambiguity (bc for identifier, sp for spacer).
+  * _[sample]\_allpairs.txt_  - lists all identifier-spacer pairs with observation counts without subjective filtering, i.e. the [sample]_allpairs.txt and [sample]_ambigpairs.txt combined. This is useful for downstream analysis applications. 
  
   ```
   $ cd ../3-SP_err_correction
@@ -75,7 +77,7 @@ Filtering as presented here is subjective; parameters were designed based on our
   ```
 **PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
 
-Change line 26 in "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
+Change the at the top of "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
 
 For PB3:
 ```
@@ -90,4 +92,9 @@ Then run:
   ```
   $ Rscript 200514_Final-filtering.R
   ```
-  
+**Truncated barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode and run the code again. 
+```
+trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
+trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
+```
+
