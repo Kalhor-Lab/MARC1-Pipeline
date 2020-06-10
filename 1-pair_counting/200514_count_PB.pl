@@ -7,8 +7,16 @@ chomp $sample;
 $sample = (split(/[\/,_]/, $sample))[4];
 print "\n$sample\n";
 
+## Set operating system parameters
+	my $operating_system = $ARGV[1];
+	##
+	
+	## This determines the blat version used for analysis, which differs between OSX and Linux systems
+## Users running this pipeline on one system or the other may consistently may opt to hardcode this option as below, by changing the number in brackets to 0 or 1.
+## my $operating_system = ('osx','linux')[1];
+
+
 ## Setting run-specific parameters
-	my $operating_system = ('osx','linux')[0];					# Inside the brackets, put 0 for OSX operating systems (Apple computers) or 1 for linux operating systems. To be set depending on what operating system this is run on because each system uses a different version of blat.
 	my $execute_folder;											#This is where the most I/O intensive operations will be done. We recommend using folder mounter in memory/RAM for this path.
 	if ($operating_system eq 'linux') {
 		$execute_folder = '/dev/shm';							# /dev/shm is a memory based folder in linux that would make I/O much faster.
@@ -134,9 +142,9 @@ foreach (my $i = 0; $i <= $#R1seqs; $i++) {
 					last LOOP2;
 			}
 			if ($line % 10000 == 0) {print "$line fastq lines analyzed for $filenameR1 at ".(localtime)."\n"}
-			#if ($line % 2000 == 0) {print "$line enteries analyzed for $filenameR1 at ".(localtime)."\n"; last LOOP1;}
+			#if ($line % 2000 == 0) {print "$line entries analyzed for $filenameR1 at ".(localtime)."\n"; last LOOP1;}
 	}
-	if ($line) {print "$line total enteries analyzed for $filenameR1 - ".(localtime)."\n"}
+	if ($line) {print "$line total entries analyzed for $filenameR1 - ".(localtime)."\n"}
 
 	## Printing barcode and spacer reports for each input file
 	foreach my $key (sort { $barcodes{$filenameR1}{$b} <=> $barcodes{$filenameR1}{$a} } keys %{$barcodes{$filenameR1}} ) {
