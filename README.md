@@ -23,7 +23,7 @@ The pipeline is composed of 4 sequential analysis parts. Each step is run from w
 * /4-pair_filtering 
 
 ## Testing the pipeline
-For testing, there are two founder files supplied in 0-raw_dataPB. The entire pipeline can be run with those files to ensure software setup is accurate and complete.
+For testing, there are two founder files supplied in 0-raw_dataPB. The entire pipeline can be run with those files to ensure software setup is accurate and complete. They are also used for analysis of non-test data, so ensure they are present and correct for all subsequent analysis runs as well.
 
 # Running the pipeline
 
@@ -34,7 +34,7 @@ For testing, there are two founder files supplied in 0-raw_dataPB. The entire pi
  $ git clone https://github.com/Kalhor-Lab/MARC1-Pipeline-NatProtoc.git
  ```
 
-Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. If FASTQ files are compressed, decompress with:
+Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. Decompress FASTQ files with:
  ```
  $ gunzip *.gz
  ```
@@ -42,48 +42,52 @@ Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. If FASTQ 
 This step is requires a commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used later in the pipeline. 
 **For Linux Users** This step defaults to an OSX blat version; pass "linux" to submit.sh to use the correct version. OSX users do not need to modify anything.
 
-In /1-pair_counting, run:
   ```
+  $ cd ../1-pair_counting
   $ chmod +x submit.sh
   $ ./submit.sh [linux]
   ```
 ## 2 Correct sequencing errors associated with identifiers 
 
-In /2-ID_err_corrections, run:
   ```
+  $ cd ../2-ID_err_correction
   $ Rscript 200514_filter-identifiers.R
   ```
 
 ## 3 Correct sequencing errors associated with spacers
 
-For each sample, this generates: 
+For each sample, this step generates: 
   * _[sample]\_genotypes.txt_  - lists each identifier and the most common associated spacer, useful for genotyping applications
   * _[sample]\_allpairs.txt_  - lists all identifier-spacer pairs with observation counts without subjective filtering; this is useful for downstream analysis applications
+  * _[sample]\_ambigpairs.txt_ - 
  
-In /3-SP_error_correction, run: 
   ```
-  $  Rscript 200514_filter-spacers.R
+  $ cd ../3-SP_err_correction
+  $ Rscript 200514_filter-spacers.R
   ```
   
 ## 4 Filtering identifier-spacer pairs & reporting on mutation levels
 
 Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified.
-  
-**PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. Change line 26 in "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
 
-For PB3 samples, line 26:
+  ```  
+  $ cd ../4-pair_filtering
   ```
+**PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
+
+Change line 26 in "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
+
+For PB3:
+```
   Founder <- c('PB3', 'PB7')[1]                   
   ```
-
-PB7 samples, line 26:
-  ```
+ For PB7:
+ ```
   Founder <- c('PB3', 'PB7')[2]                   
   ```
-
-Then, in /4-pair_filtering, run:
+  
+Then run:
   ```
   $ Rscript 200514_Final-filtering.R
   ```
-  
   
