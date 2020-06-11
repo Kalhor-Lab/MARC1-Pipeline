@@ -7,6 +7,8 @@ chomp $sample;
 $sample = (split(/[\/,_]/, $sample))[4];
 print "\n$sample\n";
 
+## In the case of incompatibility of blat with a new update of the operating system, download the latest standalone version of blat from here: http://hgdownload.soe.ucsc.edu/admin/exe/.
+
 ## Set operating system parameters
 	my $operating_system = $ARGV[1];
 	##
