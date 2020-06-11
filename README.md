@@ -17,11 +17,11 @@ The pipeline compiles paired-end reads and filters sequencing errors to prepare 
 
 The pipeline is composed of 4 sequential analysis parts. Each step is run from within a folder and acts on the output of the previous step; they should be run in sequential order.
 
-* /0-raw_data_PB  
-* /1-pair_counting 
-* /2-ID_err_correction
-* /3-SP_err_correction  
-* /4-pair_filtering 
+* 0-raw_data_PB/  
+* 1-pair_counting/
+* 2-ID_err_correction/
+* 3-SP_err_correction/  
+* 4-pair_filtering/ 
 
 ## Testing the pipeline
 For testing, there are two founder files supplied in 0-raw_data_PB. The entire pipeline can be run with those files to ensure software setup is accurate and complete. They are also used for analysis of newly generated data and thus it is important that they are present and correct for all subsequent analysis runs.
@@ -40,7 +40,7 @@ Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. Decompres
  $ gunzip *.gz
  ```
 ## 1 Compile paired end sequences from each sample to list of identifiers
-This step is requires a commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used later in the pipeline. 
+This step is requires a commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used in step 4 of the pipeline. 
 **For Linux Users** This step defaults to an OSX blat version; pass "linux" to submit.sh to use the correct version. OSX users do not need to modify anything.
 
   ```
@@ -49,7 +49,7 @@ This step is requires a commitment of system resources; we typically run this an
   $ ./submit.sh [linux]
   ```
 ## 2 Correct sequencing errors associated with identifiers 
-
+This script is compiles a list of high-confidence identifier sequences that exist in each sample. The outputs are written to  _[sample]\_trueID.txt_ .
   ```
   $ cd ../2-ID_err_correction
   $ Rscript 200514_filter-identifiers.R
@@ -70,11 +70,21 @@ For each sample, this step generates:
   
 ## 4 Filtering identifier-spacer pairs & reporting on mutation levels
 
-Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified.
+The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencing error-corrected files in 3-SP_err_correction (including the PB3 and PB7 founders) and performs the following:
+1) Filters out samples with low coverage (MinRd criterion)
+2) Filters out IDs with low coverage (PFCOFF_bc and PFCOFF_bc_exp criteria)
+3) Filters out pairs with low read counts (PFCOFF_pair and PRCOFF_pair criteria)
+4) Corrects known PCR or sequencing artifacts that are unique to MARC1 samples
+5) Corrects template-switching during PCR
+6) Corrects early-cycle PCR mutations that can make a non-mutated spacer appear mutated (max_dist_spacer criterion)
+7) Corrects one-base displacements due to sequencing error
+8) Removes spacers with short reads.
+9) Corrects IDs (orphan barcodes) that have been completely or partially deleted due to a large deletion.
+This code needs three data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_, _INUSE-PB3barcode_classification.txt_ and _INUSE-PB7barcode_classification.txt_
 
-  ```  
-  $ cd ../4-pair_filtering
-  ```
+Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. 
+
+
 **PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
 
 Change the at the top of "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
@@ -90,6 +100,7 @@ For PB3:
   
 Then run:
   ```
+  $ cd ../4-pair_filtering
   $ Rscript 200514_Final-filtering.R
   ```
 **Truncated barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode and run the code again. 
