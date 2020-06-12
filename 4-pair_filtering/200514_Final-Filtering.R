@@ -50,13 +50,14 @@ mastertable$Number <- 1:nrow(mastertable)
 hgRNA_length <- as.numeric(mastertable$Length); names(hgRNA_length) <- mastertable$Identifier                 # This vector will store the derived length of each hgRNA
 
 ## Loading barcode class table
-barcode_class <- read.table(paste("./INUSE-", Founder, "barcode_classification.txt", sep = ""), colClasses=c("character", "character"), header = TRUE);        # Based on manuscript supplementary tables
+barcode_class <- read.table(paste("./INUSE-barcode_classification.txt", sep = ""), colClasses=c("character", "character"), header = TRUE);        # Based on manuscript supplementary tables
 rownames(barcode_class) <- barcode_class[,1]
 colnames(barcode_class)[1] <- "category"
-barcode_class[barcode_class[,2] == "Inactive",1] <- 0
-barcode_class[barcode_class[,2] == "Slow",1] <- 1
-barcode_class[barcode_class[,2] == "Intermediate",1] <- 2
-barcode_class[barcode_class[,2] == "Fast",1] <- 3
+barcode_class[barcode_class[,2] == "inactive",1] <- 0
+barcode_class[barcode_class[,2] == "slow",1] <- 1
+barcode_class[barcode_class[,2] == "mid",1] <- 2
+barcode_class[barcode_class[,2] == "fast",1] <- 3
+barcode_class <- barcode_class[barcode_class$founder == Founder, c(1, 2)]
 
 
 ######################################################################################################################################################################################
