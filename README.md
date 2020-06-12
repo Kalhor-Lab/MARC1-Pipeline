@@ -33,11 +33,13 @@ For testing, there are two founder files supplied in 0-raw_data_PB. The entire p
   ```
  $ mkdir analysis 
  $ cd analysis/
- $ git clone https://github.com/Kalhor-Lab/MARC1-Pipeline-NatProtoc.git
+ $ git clone https://github.com/Kalhor-Lab/MARC1-NatProtoc-2020.git
+ $ cd MARC1-NatProtoc-2020
  ```
 
-Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. Decompress FASTQ files with:
+Move demultiplexed FASTQ files, two for each sample, to /0-raw_data_PB. Decompress FASTQ files with:
  ```
+ $ cd 0-raw_data_PB
  $ gunzip *.gz
  ```
 ## 1 Compile paired end sequences from each sample to list of identifiers
@@ -80,7 +82,7 @@ The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencin
 7) Corrects one-base displacements due to sequencing error
 8) Removes spacers with short reads.
 9) Corrects IDs (orphan barcodes) that have been completely or partially deleted due to a large deletion.
-This code needs three data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_, _INUSE-PB3barcode_classification.txt_ and _INUSE-PB7barcode_classification.txt_
+This code needs two data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_ and _INUSE-barcode_classification.txt_
 
 Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. 
 
@@ -103,7 +105,7 @@ Then run:
   $ cd ../4-pair_filtering
   $ Rscript 200514_Final-filtering.R
   ```
-**Truncated barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode and run the code again. 
+**Truncated barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  If you can identify the parents of the orphan barcodes, populate the following vectors (located at the top section of the code) with pairs of orphan barcodes and their real parent barcode and run the code again. 
 ```
 trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
