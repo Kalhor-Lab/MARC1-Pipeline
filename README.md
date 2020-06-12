@@ -8,10 +8,11 @@ The pipeline compiles paired-end reads and filters sequencing errors to prepare 
 ### Required software
 
 * A Unix system, basic familiarity with terminal commands and operation
-* A basic R installation
-* Speciality R packages:
-  - stringdist
-  - VGAM
+* A standard installation of the R statistical software (version 3.6.1)
+* R software packages
+  * VGAM (version 1.1.1)
+  * Stringdist (version 0.9.5.1)
+
 
 # Usage guide
 
@@ -41,12 +42,11 @@ Move demultiplexed FASTQ files, two for each sample, to /0-raw_dataPB. Decompres
  ```
 ## 1 Compile paired end sequences from each sample to list of identifiers
 This step is requires a commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used in step 4 of the pipeline. 
-**For Linux Users** This step defaults to an OSX blat version; pass "linux" to submit.sh to use the correct version. OSX users do not need to modify anything.
 
   ```
   $ cd ../1-pair_counting
   $ chmod +x submit.sh
-  $ ./submit.sh [linux]
+  $ ./submit.sh 
   ```
 ## 2 Correct sequencing errors associated with identifiers 
 This script is compiles a list of high-confidence identifier sequences that exist in each sample. The outputs are written to  _[sample]\_trueID.txt_ .
@@ -111,6 +111,11 @@ trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcod
 
 # Technical troubleshooting
 
-## Blat versions
+## Blat versions and step 1
 
-Operating system updates may render the versions of blat provided here and used in step 1, out of date. The most up to date versions can be downloaded directly from http://hgdownload.soe.ucsc.edu/admin/exe/. 
+* submit.sh should automatically pass in the correct operating system for both OSX and Linux users. If this fails, submit.sh can be edited manually for your OS.
+* OS updates may render the versions of blat provided here for use in step 1 out of date or incompatible. The most up to date versions can be downloaded directly from http://hgdownload.soe.ucsc.edu/admin/exe/. The script submit.sh 
+
+## R versions
+
+* We do not anticipate R versioning being problematic; explicit version numbers are provided for reference only.

@@ -1,8 +1,14 @@
 #!/bin/bash
 
 
-sys=${1:-'osx'}
+#sys=${1:-'osx'}
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+	sys="linux";
+else
+	sys='osx';
+
+fi
 
 for i in `ls ../0-raw_data_PB/*R1_001.fastq`; do
 	prename="$(cut -d'/' -f3 <<<$i)"; name="$(cut -d'_' -f1 <<<$prename)"
