@@ -27,6 +27,10 @@ The pipeline is composed of 4 sequential analysis parts. Each step is run from w
 ## Testing the pipeline
 For testing, there are two founder files supplied in 0-raw_data_PB. The entire pipeline can be run with those files to ensure software setup is accurate and complete. They are also used for analysis of newly generated data and thus it is important that they are present and correct for all subsequent analysis runs.
 
+## Examples
+
+An example run is provided in exampleRun/. This run contains the output from analyzing one mutant and one genotyping sample in full.
+
 # Running the pipeline
 
 ## 0 Set up an analysis workspace
