@@ -37,8 +37,8 @@ An example run is provided in exampleRun/. This run contains the output from ana
   ```
  $ mkdir analysis 
  $ cd analysis/
- $ git clone https://github.com/Kalhor-Lab/MARC1-NatProtoc-2020.git
- $ cd MARC1-NatProtoc-2020
+ $ git clone https://github.com/Kalhor-Lab/MARC1-Pipeline.git
+ $ cd MARC1-Pipeline-2020
  ```
 
 Move demultiplexed FASTQ files, two for each sample, to /0-raw_data_PB. Decompress FASTQ files with:
