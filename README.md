@@ -117,6 +117,10 @@ trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcod
 
 # Technical troubleshooting
 
+## Step 1 (compiling paired end sequences from each sample to list of identifiers) too slow.
+
+* Use a computing cluster and submit each paired-end file as a separate job.
+
 ## Blat versions and step 1
 
 * submit.sh should automatically pass in the correct operating system for both OSX and Linux users. If this fails, submit.sh can be edited manually for your OS.
