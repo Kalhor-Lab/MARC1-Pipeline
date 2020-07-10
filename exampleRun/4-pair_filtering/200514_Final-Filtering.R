@@ -88,6 +88,7 @@ allspacers_bybarcode <- list()                                                 #
 all_barcodes <- vector()
 
 ##  Reading the truepairs file for all samples and storing them as a list of dataframes in alldata_bysample
+parent_sample <- NULL
 name_base <- paste(Sys.Date(), '_SpacerFilteringLog', sep = "")
 filename_text <- paste(name_base, '.txt', sep = '')
 sink(file = filename_text); sink();
@@ -199,6 +200,11 @@ all_pairs <- unique(all_pairs)
 all_pairs <- all_pairs[order(all_pairs)]
 all_barcodes <- unique(all_barcodes)
 all_barcodes <- all_barcodes[order(all_barcodes)]
+
+if (is.null(parent_sample)) {       #Printing an error message that no founder sample has been identified
+  print("ERROR: No founder sample was identified in ../3-SP_err_correction. Therefore, mutation rates cannot be calculated.")
+  print("A founder sample file named 'PB7-founder_allpairs.txt' or 'PB3-founder_allpairs.txt' must be present in ../3-SP_err_correction")
+}
 
 ### Finding the IDs in each sample that were not observed in the Founder/Parent. 
 Orph1 <- NULL;
