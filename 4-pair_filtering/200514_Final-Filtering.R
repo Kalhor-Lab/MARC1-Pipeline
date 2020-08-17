@@ -1,6 +1,6 @@
 # This script starts with the sequencing error-corrected files in 3-SP_err_correction and:
 #     1) Filters out samples with low coverage (MinRd criterion)
-#     2) Filters out IDs with low coverage (PFCOFF_bc and PFCOFF_bc_exp criteria)
+#     2) Filters out IDs with low coverage (PFCOFF_bc_ref and PFCOFF_bc_exp criteria)
 #     3) Filters out pairs with low read counts (PFCOFF_pair and PRCOFF_pair criteria)
 #     4) Corrects known PCR or sequencing artifacts that are unique to MARC1 samples
 #     5) Corrects template-switching during PCR
@@ -31,8 +31,8 @@ trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', 
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 
 MinRd <- 2000                                   # Minimum total number of reads for a sample to be considered.
-PFCOFF_bc <- NULL                               # Read Percentage Cutoff is the the percentage of total reads in a sample that an identifier (bc) needs to have to be included. If not assigned here (is.null) this value will be assigned for each sample based on the total number of observed barcodes in it.
-PFCOFF_bc_exp <- 1.75                           # If not assigned above, PFCOFF_bc will be 1/(number-of-barcodes-in-sample)^PFCOFF_bc_exp . So, if a sample has 10 initially detected barcodes, those with less than 1/(10^PFCOFF_pair) of total read counts will be removed. We typically choose PFCOFF_bc_exp between 1.5 and 2. Higher values are more inclusive. Lower values should be used when there is cross contamination between samples. 
+PFCOFF_bc_ref <- NULL                               # Read Percentage Cutoff is the the percentage of total reads in a sample that an identifier (bc) needs to have to be included. If not assigned here (is.null) this value will be assigned for each sample based on the total number of observed barcodes in it.
+PFCOFF_bc_exp <- 1.75                           # If not assigned above, PFCOFF_bc_ref will be 1/(number-of-barcodes-in-sample)^PFCOFF_bc_exp . So, if a sample has 10 initially detected barcodes, those with less than 1/(10^PFCOFF_pair) of total read counts will be removed. We typically choose PFCOFF_bc_exp between 1.5 and 2. Higher values are more inclusive. Lower values should be used when there is cross contamination between samples. 
 PFCOFF_pair <- 0.01                            # Read fraction Cutoff is the the fraction of total reads in a barcode (ID) that a pair needs to have to be considered at all. Spacer sequences that correspond to PCR and sequencing errors tend to be infrequent, constituting less than 0.01 of all spacers for an ID (barcode)
 PRCOFF_pair <- 2                                # Pairs with equal to or fewer than PRCOFF_pair reads in total will be removed.
 max_dist_spacer <- 1;                                     # Since spacers for each sample are converted into a consensus separately, it is possible that a specific sample has the reference spacer in the parent only with a PCR or sequencing-based single point mutation which causes it to appear 100% mutated. Such a problem was observed with samples with smaller reads. As a result, the string.dist(method = "hamming") strategy will later in this script to count slight variants of the parental sequence as non-mutants.
@@ -129,7 +129,7 @@ for (file1 in files1) {
   for (i in 1:nrow(bc_abundances)) { if (bc_abundances[i,2] <= PRCOFF_pair) {pairs <- pairs[-which(pairs[,1] == bc_abundances[i,1], arr.ind = TRUE),]} }          # Eliminating pairs that don't meat the PRCOFF_pair criteria.
   
   pairs$V4 <- NA;                                     # For each entry, this column indicates its percentage among pairs with the same barcode in that sample
-  if(is.null(PFCOFF_bc)) {PFCOFF_bc <- 1/length(levels(as.factor(as.vector(pairs[,1]))))^PFCOFF_bc_exp} #Establishing a cutoff for removing IDs/barcodes with low total read counts. These IDs, which can be a result of cross contamination, are present at lower frequency than IDs that truly belong to the sample. This filtering criteria carries out an adjustment based on total number of IDs so that the cutoff is lower the higher the total number of IDs is.
+  if(is.null(PFCOFF_bc_ref)) {PFCOFF_bc <- 1/length(levels(as.factor(as.vector(pairs[,1]))))^PFCOFF_bc_exp} else {PFCOFF_bc <- PFCOFF_bc_ref} #Establishing a cutoff for removing IDs/barcodes with low total read counts. This cutoff is PFCOFF_bc and is calculated based on PFCOFF_bc_ref and PFCOFF_bc_exp. These IDs, which can be a result of cross contamination, are present at lower frequency than IDs that truly belong to the sample. This filtering criteria carries out an adjustment based on total number of IDs so that the cutoff is lower the higher the total number of IDs is.
 
   ## [200305] : The "pairs" table has to be sorted properly for below steps to work appropriately (especially the one-base displacement adjustment). Therefore, the following command is added to make sure
   pairs <- pairs[order(pairs$V1, -pairs$V3),]   #sorting pairs on barcode followed by descending frequency because some filtering operations above can disrupt order
