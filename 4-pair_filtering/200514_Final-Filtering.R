@@ -182,7 +182,7 @@ for (file1 in files1) {
       if (length(which(pairs[,3] < cutoff & pairs[,1] == bc, arr.ind = TRUE)) > 0 ) {   # Eliminating pairs that don't meet the PFCOFF_pair criteria
         pairs <- pairs[-which(pairs[,3] < cutoff & pairs[,1] == bc, arr.ind = TRUE),]}
       pairs[,4][pairs[,1] == bc] <- round(pairs[,3][pairs[,1] == bc]/(sum(pairs[,3][pairs[,1] == bc]))*100, digits = 2)
-      alldata_bybarcode_bysample[[bc]][[sample_name]] <- subset(pairs, V1 == bc)
+      if ( nrow(subset(pairs, V1 == bc)) > 0 ) {alldata_bybarcode_bysample[[bc]][[sample_name]] <- subset(pairs, V1 == bc)}
       allspacers_bybarcode[[bc]] <- append(allspacers_bybarcode[[bc]], as.character(pairs[,2][pairs[,1] == bc])); allspacers_bybarcode[[bc]] <- unique(allspacers_bybarcode[[bc]])
     } else {pairs <- subset(pairs, V1 != bc)}
   }
