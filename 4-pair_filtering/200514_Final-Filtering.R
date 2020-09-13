@@ -12,7 +12,8 @@
 # The output of the script is 
 #     1) A table of high-confidence pairs and their counts.
 #     2) Mutated fracton of each identifier compared to the sequence in the Founder of that line.
-# 
+#     3) An allele frequency table that could be readily clustered by samples. 
+#
 # The code creates the following lists within it that can be readily used for further analysis (such as clustering, etc):
 #     1) alldata_bybarcode_bysample
 #     2) alldata_bysample
@@ -470,6 +471,7 @@ if (sum(Orph3) > 0) {
     print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated or manual filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
   }
   print("*********Above IDs have to be manually corrected, return to Filter 3: manual fixing*********")
+  print("*********IDs that do not match an ID in the Founder will be excluded from Barcode Table*********")
 } else {
   if ( sum(Orph1) > 0 & sum(Orph2) > 0 ) {print("After automated and manual filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
 }
@@ -530,6 +532,58 @@ for(sampl in names(mutations)) {
   }
 }
 sink()
+
+
+################## MAKING BARCODE TABLE ###################################################################################################################################
+
+name_pattern <- "";                     # If wishing to limit the barcode table to a subset of samples, include a character set that they exclusively share in their name here. Otherwise, leave this variable as an empty character to include all samples
+file1name <- paste(Sys.Date(), "_", 'BarcodeTableAlleleLookup', '.txt', sep = "")
+sink(file = file1name); sink();              # Since append will be used later, this makes sure the file is wiped clean every time, if it exists.
+mouse_samples <- NULL; mouse_samples <- names(alldata_bysample)[grep(name_pattern, names(alldata_bysample))]
+names(mouse_samples) <- mouse_samples
+mouse_samples <- mouse_samples[(order(names(mouse_samples)))]
+
+barcodes <- NULL;       # Identifiers to be included in Barcode Table
+# for (mouse_sampl in mouse_samples[-grep(parent_sample, mouse_samples)] ) {
+#   barcodes <- union(barcodes, unique(alldata_bysample[[mouse_sampl]][,1]))
+# }
+for (mouse_sampl in mouse_samples){
+  if (mouse_sampl != parent_sample)
+    barcodes <- union(barcodes, alldata_bysample[[mouse_sampl]][,1])
+}
+barcodes <- sort(barcodes) # Sorting Identifiers/IDs in alphabetically (which matches their numbering).
+
+master_barcode_table <- NULL; master_barcode_table <- as.data.frame(matrix(nrow = length(mouse_samples), ncol = 0, dimnames = list( mouse_samples, NULL ) ))               # Table of all barcodes. Each row will be a sample and each column will be a mutant allele. The value in each cell shows the frequency of the corresponding mutant allele in the corresponding sample.
+for (bc in barcodes) {
+  alldata_bysample <- alldata_bybarcode_bysample[[bc]]
+  #deriving parental and all mutant spacer sequences for this bc in relevant samples
+  spacers <- NULL; spacers <- alldata_bysample[[parent]][,2]
+  for (mouse_sampl in mouse_samples) {
+    spacers <- union(spacers, alldata_bysample[[mouse_sampl]][,2])
+  }
+  parental_spacer_count <- NULL; parental_spacer_count <- nrow(alldata_bysample[[parent]])      # Number of mutant alleles observed for the ID in the founder (expected to be one, but common sequencing errors may lead to more).
+  names(spacers) <- paste("ID#", formatC(mastertable[bc,]$Number, width = 3, flag = "0"),"-mut#", formatC(seq(1-parental_spacer_count, 1-parental_spacer_count+length(spacers)-1), width = nchar(length(spacers)), flag = "0"), sep ="" ) 
+  names(spacers)[1:parental_spacer_count] <- paste("ID#", formatC(mastertable[bc,]$Number, width = 3, flag = "0"), "-par#", formatC(1:parental_spacer_count, width = nchar(length(spacers)), flag = "0"), sep = "")
+  write.table(as.data.frame(spacers), file = file1name, append = TRUE, quote = FALSE, sep = "\t",  col.names = FALSE)
+  
+  barcode_table_this_ID <- NULL; barcode_table_this_ID <- as.data.frame(matrix(nrow = length(mouse_samples), ncol = length(spacers), dimnames = list( mouse_samples, names(spacers) ) )) #Barcode table for the identifier currently under analysis. These barcode tables will be combined to obtain the master_barcode_table
+  for(sampl_i in 1:length(mouse_samples)) {
+    mouse_sampl <- mouse_samples[sampl_i]
+    if ( !is.null(nrow(alldata_bysample[[mouse_sampl]])) ) {
+      barcode_table_this_ID[sampl_i, ] <- 0                              # if an identifier/hgRNA is seen in a sample, then the frequency of all its unseen mutant alleles in that sample is 0. If the Identifier/hgRNA is absent from a sample altogether, then the frequency of all its mutant alleles is NA.
+      for (spacr_r in 1:nrow(alldata_bysample[[mouse_sampl]]) ) {              # instead of going through all alleles for each sampl, going through only those that exist in that sampl
+        barcode_table_this_ID[sampl_i, which(spacers == alldata_bysample[[mouse_sampl]][spacr_r,2])] <- alldata_bysample[[mouse_sampl]][spacr_r, 4]
+      }
+    }
+  }
+  master_barcode_table <- cbind(master_barcode_table, barcode_table_this_ID);
+}
+
+sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
+
+file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
+write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
+
 
 
 
