@@ -11,7 +11,7 @@ The pipeline compiles paired-end reads and filters sequencing errors to prepare 
 * A standard installation of the R statistical software (version 3.6.1)
 * R software packages
   * VGAM (version 1.1.1)
-  * Stringdist (version 0.9.5.1)
+  * stringdist (version 0.9.5.1)
 
 
 # Usage guide
