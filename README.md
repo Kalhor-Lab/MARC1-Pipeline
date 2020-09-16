@@ -29,7 +29,7 @@ For testing, there are two founder files supplied in 0-raw_data_PB. The entire p
 
 ## Examples
 
-An example run is provided in exampleRun/. This run contains the output from analyzing one mutant and one genotyping sample in full.
+An example run is provided in exampleRun/. This run contains the output from analyzing three mutant and one genotyping sample in full.
 
 # Running the pipeline
 
@@ -89,6 +89,13 @@ The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencin
 This code needs two data files to function properly: _INUSE_AllPB-BarcodesMasterTable.txt_ and _INUSE-barcode_classification.txt_
 
 Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. 
+
+The output files include:
+  * _[sample]\filteredpairs.txt_ - for each sample, lists corrected identifier-spacer pairs, the total observation count for that pair, the percent of that pair within all observations of that identifier, and the percent of that pair within the sample.
+  * _[date]\_IdentifierSampleMatrix.txt_ - for all samples, which hgRNAs are present
+  * _[date]\_hgRNA-mutation-levels.txt_ - for all hgRNAs in all samples, what percent of each allele is mutated
+  * _[date]\_BacrodeTableAlleleLookup.txt_ - all observed mutants in all samples
+  * _[date]\_BacrodeTable.txt_ - For each observed mutant, the % of that mutant in each sample. This is useful for clustering samples and creating lineage trees.
 
 
 **PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
