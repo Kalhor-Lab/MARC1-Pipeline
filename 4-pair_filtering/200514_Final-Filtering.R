@@ -24,7 +24,8 @@ library(stringdist)
 ###################################################################################################################################
 # If the mouse under analysis is derived from the PB3 line, Founder should be set as "PB3"; if from the PB7 line, the variable should be set as "PB7"
 # For PB3 samples, modify the number in brackets below to 1; otherwise, leave as is.
-Founder <- c('PB3', 'PB7')[2]                   
+Founder <- c('PB3', 'PB7')[2]         
+
 # In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). 
 # Run this code one time with no values in the following two vectors. Orphan barcodes will be printed in stdout. 
 # If you can identify the parents of the orphan barcodes, populate these vectors with pairs of orphan barcodes and their real parent barcode. 
@@ -464,14 +465,27 @@ for(sampl in names(alldata_bysample))  {
 }
 names(Orph3) <- names(alldata_bysample)
 
+name_base_err <- paste(Sys.Date(), '_ERROR', sep = "")        # Reporting orphan barcodes to an error file output.
+filename_text_err <- paste(name_base_err, '.txt', sep = '')
 if (sum(Orph3) > 0) {
   orphan_barcodes <- NULL;
   for(sampl in names(Orph3)[Orph3 > 0])  {
     nonparental_barcodes <- unique(alldata_bysample[[sampl]][,1])[!unique(alldata_bysample[[sampl]][,1]) %in% alldata_bysample[[parent_sample]][,1]];
     print(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated or manual filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "))
+    sink(file = filename_text_err, append = TRUE); 
+    cat(paste("The following identifiers (barcodes) in ", sampl, " do not exist in ", parent, " (the Founder/Parent) and have not been corrected using automated or manual filters: ", paste(nonparental_barcodes, collapse = ","), sep = " "), "\n")
+    sink();
   }
-  print("*********Above IDs have to be manually corrected, return to Filter 3: manual fixing*********")
-  print("*********IDs that do not match an ID in the Founder will be excluded from Barcode Table*********")
+  print("*********Above IDs are orphan and have to be manually corrected. Enter each orphan ID as an element 'trunc_barcodes' in line 32 of this code.*********")
+  print("*********Then enter its corresponding reference ID in the corresponding element in 'trunc_barcodes_ref' in line 33.*********")
+  print("*********Finally, return to line 417 of this code and rerun 'Filter 3: manual fixing'*********")
+  print("*********Warnings: IDs that do not match an ID in the Founder will be excluded from Barcode Table*********")
+  sink(file = filename_text_err, append = TRUE); 
+  cat("Above IDs are orphan and have to be manually corrected. Enter each orphan ID as an element 'trunc_barcodes' in line 32 of this code.", "\n")
+  cat("Then enter its corresponding reference ID in the corresponding element in 'trunc_barcodes_ref' in line 33.", "\n")
+  cat("Finally, return to line 417 of this code and rerun 'Filter 3: manual fixing'", "\n")
+  cat("Warnings: IDs that do not match an ID in the Founder will be excluded from Barcode Table", "\n", "\n", "\n")
+  sink();
 } else {
   if ( sum(Orph1) > 0 & sum(Orph2) > 0 ) {print("After automated and manual filtering, all IDs in all samples match the IDs in the Founder. No additional adjustment is necessary")}
 }
