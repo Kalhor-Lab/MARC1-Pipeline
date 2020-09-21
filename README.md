@@ -116,11 +116,11 @@ trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcod
 ```
 
 **Clustering the full barcode table** A full barcode table is created (master_barcode_table) and reported to the output as a flat file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents to the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run:
-
+```
 master_barcode_table <- master_barcode_table[,-grep("par", colnames(master_barcode_table))]   # Removing the parental alleles from the table.
 dendrogram <- as.dendrogram(hclust(dist(master_barcode_table, method = "manhattan"), method = "ward.D2"))
 plot(dendrogram)
-
+```
 
 # Technical troubleshooting
 
