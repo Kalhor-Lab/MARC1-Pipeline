@@ -116,12 +116,14 @@ trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', 
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 ```
 
-**Clustering the full barcode table** A full barcode table is created (master_barcode_table) and reported to the output as a flat file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents to the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run:
+**Clustering the full barcode table** A full barcode table is created (yyyy-mm-dd_BarcodeTable.txt) and written to file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run:
 ```
-master_barcode_table <- master_barcode_table[,-grep("par", colnames(master_barcode_table))]   # Removing the parental alleles from the table.
-dendrogram <- as.dendrogram(hclust(dist(master_barcode_table, method = "manhattan"), method = "ward.D2"))
+barcode_table <- read.table(file = 'analysis/4-pair_filtering/2020-09-23_BarcodeTable.txt', check.names = FALSE)
+barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
+dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
 plot(dendrogram)
 ```
+Note that the unresolved identifiers (orphan barcodes) are excluded from the barcode table.
 
 # Technical troubleshooting
 
