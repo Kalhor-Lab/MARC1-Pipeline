@@ -58,7 +58,7 @@ This step is requires some commitment of system resources; we typically run this
 This script is compiles a list of high-confidence identifier sequences that exist in each sample. The outputs are written to  _[sample]\_trueID.txt_ .
   ```
   $ cd ../2-ID_err_correction
-  $ Rscript 200514_filter-identifiers.R
+  $ Rscript Filter-identifiers.R
   ```
 
 ## 3 Correct sequencing errors associated with spacers
@@ -71,12 +71,12 @@ For each sample, this step generates:
  
   ```
   $ cd ../3-SP_err_correction
-  $ Rscript 200514_filter-spacers.R
+  $ Rscript Filter-spacers.R
   ```
   
 ## 4 Filtering identifier-spacer pairs, reporting on mutation levels & creating full barcode tables
 
-The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencing error-corrected files in 3-SP_err_correction (including the PB3 and PB7 founders) and performs the following:
+The script _4-pair_filtering/Final-filtering.R_ starts with the sequencing error-corrected files in 3-SP_err_correction (including the PB3 and PB7 founders) and performs the following:
 1) Filters out samples with low coverage (MinRd criterion)
 2) Filters out IDs with low coverage (PFCOFF_bc and PFCOFF_bc_exp criteria)
 3) Filters out pairs with low read counts (PFCOFF_pair and PRCOFF_pair criteria)
@@ -94,7 +94,7 @@ Filtering as presented here is subjective; parameters were designed based on our
 **PB3 and PB7 differences** 
 Specific corrections are based on known particularities of the PB3 and PB7 sequences. Additionally, hgRNA sequences in the PB3 and PB7 founders is used to determine whether sequences observed in other samples are mutated or not. Therefore founder strain should be specified accordingly.
 
-Change the at the top of "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
+Change the at the top of "/4-pair_filtering/Final-Filtering.R" for your use case.
 
 For PB3:
 ```
@@ -108,9 +108,9 @@ For PB3:
 Then run:
   ```
   $ cd ../4-pair_filtering
-  $ Rscript 200514_Final-filtering.R
+  $ Rscript Final-filtering.R
   ```
-**Truncated or orphan barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/200514_Final-Filtering.R" will print such IDs in stdout.  To identify the parents of orphan barcodes, you can extract their corresponding spacer sequence from the allbarcodes.txt file in "/3-SP_err_correction/" to determine which of the founder spacers they resemble the most. If you can identify the parents of the orphan barcodes, populate the following vectors (located at the top section of the code) with pairs of orphan barcodes and their real parent barcode and run the code again. If you cannot identify the parent of an orphan barcode, add its identifier to the spurious_barcodes vector to remove it from analysis.
+**Truncated or orphan barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/Final-Filtering.R" will print such IDs in stdout.  To identify the parents of orphan barcodes, you can extract their corresponding spacer sequence from the allbarcodes.txt file in "/3-SP_err_correction/" to determine which of the founder spacers they resemble the most. If you can identify the parents of the orphan barcodes, populate the following vectors (located at the top section of the code) with pairs of orphan barcodes and their real parent barcode and run the code again. If you cannot identify the parent of an orphan barcode, add its identifier to the spurious_barcodes vector to remove it from analysis.
 ```
 trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
