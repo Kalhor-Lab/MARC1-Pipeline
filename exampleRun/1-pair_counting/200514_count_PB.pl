@@ -40,6 +40,7 @@ $prebarcode_sequence = capital($prebarcode_sequence);
 
 my $prespacer_sequence = "atggactatcatatgcttaccgtaacttgaaagtatttcgatttcttggctttatatatcttgtggaaaggacg";					# Expected sequence to be observed in Read1 before the spacer region starts
 $prespacer_sequence = capital($prespacer_sequence);
+my $prespacer_sequence_short = substr($prespacer_sequence, -12);														# To be used in the initial fast-search mode. If not found, full $prespacer_sequence will be used in a more exhaustive but slower search.		
 
 
 ##Creating execute subfolder in execute folder
@@ -107,25 +108,34 @@ foreach (my $i = 0; $i <= $#R1seqs; $i++) {
 							print "\n$filenameR1\t$name\n" if $PRINT;
 							
 							## Determining the position of the barcode in R2 based on $prebarcode_sequence
-							my @barcode_alignments = blat($read2, $prebarcode_sequence);					# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
-							if (@barcode_alignments) {
-									my @barcode_alignment = split("\t", $barcode_alignments[0]);	print "prebarcode alignment:\t".join("\t",@barcode_alignment)."\n" if $PRINT;
-									if ($barcode_alignment[17] == 1 && $barcode_alignment[0] > 0.8*length($prebarcode_sequence)) { 												# Ensuring that the $prebarcode_sequence (query) has aligned to only one position in $read2 (target) 
-											$barcode = substr($read2, $barcode_alignment[16], $read2_trim[1]);		# Extracting the Barcode region from Read 2.
-									}
+							my $barcode_search = index($read2, $prebarcode_sequence);						# Searching for a perfect match to the pre-barcode sequence
+							if ($barcode_search > -1) {														# There is a perfect match to the prebarcode_sequence
+								$barcode = substr($read2, $barcode_search + length($prebarcode_sequence), $read2_trim[1]);					# Extracting the Barcode region from Read 2.
+							} else {																		# There is no exact match to the prebarcode_sequence and a more time consuming but thorough search is needed.
+								my @barcode_alignments = blat($read2, $prebarcode_sequence);					# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
+								if (@barcode_alignments) {
+										my @barcode_alignment = split("\t", $barcode_alignments[0]);	print "prebarcode alignment:\t".join("\t",@barcode_alignment)."\n" if $PRINT;
+										if ($barcode_alignment[17] == 1 && $barcode_alignment[0] > 0.8*length($prebarcode_sequence)) { 												# Ensuring that the $prebarcode_sequence (query) has aligned to only one position in $read2 (target) 
+												$barcode = substr($read2, $barcode_alignment[16], $read2_trim[1]);		# Extracting the Barcode region from Read 2.
+										}
+								}
 							}
 							print "barcode:\t $barcode\n" if $PRINT;
+
 							
 
 							## Determining the position of the spacer in R1 based on $prespacer_sequence
-							my @spacer_alignments1 = blat($read1, $prespacer_sequence);						# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
-							#my @spacer_alignments2 = blat($read1, $postspacer_sequence);					# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
-							if (@spacer_alignments1) {
-									my @spacer_alignment1 = split("\t", $spacer_alignments1[0]);	print "prespacer alignment:\t".join("\t",@spacer_alignment1)."\n" if $PRINT;
-									#my @spacer_alignment2 = split("\t", $spacer_alignments2[0]);	print "pstspacer alignment:\t".join("\t",@spacer_alignment2)."\n" if $PRINT;
-									if ($spacer_alignment1[17] == 1 && $spacer_alignment1[0] > 0.8*length($prespacer_sequence) ) { 	# Ensuring that the $prespacer_sequence and $postspacer_sequence (queries) have aligned to only one position in $read1 (target) 
-											$spacer = substr($read1, $spacer_alignment1[16]-1, $read1_spacer[1]);		# Extracting the spacer region from Read 1. 
-									}
+							my $spacer_search = index($read2, $prespacer_sequence_short);							# Searching for a perfect match to the pre-spacer sequence. The short version is being used to speed up the search.
+							if ($spacer_search > -1) {														# There is a perfect match to the prespacer_sequence
+								$spacer = substr($read1, $spacer_search + length($prespacer_sequence_short), $read1_spacer[1]);			# Extracting the Spacer region from Read 1.
+							} else {																		# There is no exact match to the prespacer_sequence and a more time consuming but thorough search is needed. The full prespacer_sequence will be used.							
+								my @spacer_alignments1 = blat($read1, $prespacer_sequence);						# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
+								if (@spacer_alignments1) {
+										my @spacer_alignment1 = split("\t", $spacer_alignments1[0]);	print "prespacer alignment:\t".join("\t",@spacer_alignment1)."\n" if $PRINT;
+										if ($spacer_alignment1[17] == 1 && $spacer_alignment1[0] > 0.8*length($prespacer_sequence) ) { 	# Quality controling the blat alignment
+												$spacer = substr($read1, $spacer_alignment1[16]-1, $read1_spacer[1]);		# Extracting the spacer region from Read 1. 
+										}
+								}
 							}
 							print "spacer:\t $spacer\n" if $PRINT;
 				
