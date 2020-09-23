@@ -29,7 +29,7 @@ For testing, there are two founder files supplied in 0-raw_data_PB. The entire p
 
 ## Examples
 
-An example run is provided in exampleRun/. This run contains the output from analyzing one mutant and one genotyping sample in full.
+An example run is provided in exampleRun/. This run contains the output from analyzing three mutant and one genotyping sample in full. 
 
 # Running the pipeline
 
@@ -47,7 +47,7 @@ Move demultiplexed FASTQ files, two for each sample, to /0-raw_data_PB. Decompre
  $ gunzip *.gz
  ```
 ## 1 Compile paired end sequences from each sample to list of identifiers
-This step is requires a commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used in step 4 of the pipeline. 
+This step is requires some commitment of system resources; we typically run this analysis on a cluster. Check that PB7-founder and PB3-founder files are included, as they provide both analysis controls and are used in step 4 of the pipeline. 
 
   ```
   $ cd ../1-pair_counting
