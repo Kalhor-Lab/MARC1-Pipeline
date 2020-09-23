@@ -34,7 +34,7 @@ trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcod
 
 MinRd <- 2000                                   # Minimum total number of reads for a sample to be considered.
 PFCOFF_bc_ref <- NULL                               # Read Percentage Cutoff is the the percentage of total reads in a sample that an identifier (bc) needs to have to be included. If not assigned here (is.null) this value will be assigned for each sample based on the total number of observed barcodes in it.
-PFCOFF_bc_exp <- 2                           # If not assigned above, PFCOFF_bc_ref will be 1/(number-of-barcodes-in-sample)^PFCOFF_bc_exp . So, if a sample has 10 initially detected barcodes, those with less than 1/(10^PFCOFF_pair) of total read counts will be removed. We typically choose PFCOFF_bc_exp between 1.5 and 2. Higher values are more inclusive. Lower values should be used when there is cross contamination between samples. 
+PFCOFF_bc_exp <- 2                            # If not assigned above, PFCOFF_bc_ref will be 1/(number-of-barcodes-in-sample)^PFCOFF_bc_exp . So, if a sample has 10 initially detected barcodes, those with less than 1/(10^PFCOFF_pair) of total read counts will be removed. We typically choose PFCOFF_bc_exp between 1.5 and 2. Higher values are more inclusive. Lower values should be used when there is cross contamination between samples. 
 PFCOFF_pair <- 0.01                            # Read fraction Cutoff is the the fraction of total reads in a barcode (ID) that a pair needs to have to be considered at all. Spacer sequences that correspond to PCR and sequencing errors tend to be infrequent, constituting less than 0.01 of all spacers for an ID (barcode)
 PRCOFF_pair <- 2                                # Pairs with equal to or fewer than PRCOFF_pair reads in total will be removed.
 max_dist_spacer <- 1;                                     # Since spacers for each sample are converted into a consensus separately, it is possible that a specific sample has the reference spacer in the parent only with a PCR or sequencing-based single point mutation which causes it to appear 100% mutated. Such a problem was observed with samples with smaller reads. As a result, the string.dist(method = "hamming") strategy will later in this script to count slight variants of the parental sequence as non-mutants.
@@ -549,23 +549,27 @@ sink()
 
 
 ################## MAKING BARCODE TABLE ###################################################################################################################################
+mouse_samples <- c()                  # If wishing to limit the barcode table to a subset of samples, populate this variable with full sample names. Otherwise, leave it empty to include all samples.
+# name_pattern <- "";
+# mouse_samples <- names(alldata_bysample)[grep(name_pattern, names(alldata_bysample))]
 
-name_pattern <- "";                     # If wishing to limit the barcode table to a subset of samples, include a character set that they exclusively share in their name here. Otherwise, leave this variable as an empty character to include all samples
+if (is.null(mouse_samples))
+  mouse_samples <- names(alldata_bysample)
+
 file1name <- paste(Sys.Date(), "_", 'BarcodeTableAlleleLookup', '.txt', sep = "")
 sink(file = file1name); sink();              # Since append will be used later, this makes sure the file is wiped clean every time, if it exists.
-mouse_samples <- NULL; mouse_samples <- names(alldata_bysample)[grep(name_pattern, names(alldata_bysample))]
 names(mouse_samples) <- mouse_samples
 mouse_samples <- mouse_samples[(order(names(mouse_samples)))]
 
 barcodes <- NULL;       # Identifiers to be included in Barcode Table
-# for (mouse_sampl in mouse_samples[-grep(parent_sample, mouse_samples)] ) {
-#   barcodes <- union(barcodes, unique(alldata_bysample[[mouse_sampl]][,1]))
-# }
+
 for (mouse_sampl in mouse_samples){
   if (mouse_sampl != parent_sample)
     barcodes <- union(barcodes, alldata_bysample[[mouse_sampl]][,1])
 }
-barcodes <- sort(barcodes) # Sorting Identifiers/IDs in alphabetically (which matches their numbering).
+
+barcodes <- barcodes[barcodes %in% alldata_bysample[[parent_sample]][, 1]] # exluding non-parental (orphan barcodes)
+barcodes <- sort(barcodes) # Sorting Identifiers/IDs alphabetically (which matches their numbering).
 
 master_barcode_table <- NULL; master_barcode_table <- as.data.frame(matrix(nrow = length(mouse_samples), ncol = 0, dimnames = list( mouse_samples, NULL ) ))               # Table of all barcodes. Each row will be a sample and each column will be a mutant allele. The value in each cell shows the frequency of the corresponding mutant allele in the corresponding sample.
 for (bc in barcodes) {
@@ -598,6 +602,10 @@ sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
 file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
 write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
 
-
+# barcode_table <- read.table(file = '/Users/Kian/Barcode Evolution/200511_NatProt/200923_test/MARC1-Pipeline_copiedFromGithub/4-pair_filtering/2020-09-23_BarcodeTable.txt',
+#                                      , check.names = FALSE)
+# barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
+# dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
+# plot(dendrogram)
 
 

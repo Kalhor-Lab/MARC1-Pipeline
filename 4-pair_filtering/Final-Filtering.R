@@ -549,23 +549,27 @@ sink()
 
 
 ################## MAKING BARCODE TABLE ###################################################################################################################################
+mouse_samples <- c()                  # If wishing to limit the barcode table to a subset of samples, populate this variable with full sample names. Otherwise, leave it empty to include all samples.
+# name_pattern <- "";
+# mouse_samples <- names(alldata_bysample)[grep(name_pattern, names(alldata_bysample))]
 
-name_pattern <- "";                     # If wishing to limit the barcode table to a subset of samples, include a character set that they exclusively share in their name here. Otherwise, leave this variable as an empty character to include all samples
+if (is.null(mouse_samples))
+  mouse_samples <- names(alldata_bysample)
+
 file1name <- paste(Sys.Date(), "_", 'BarcodeTableAlleleLookup', '.txt', sep = "")
 sink(file = file1name); sink();              # Since append will be used later, this makes sure the file is wiped clean every time, if it exists.
-mouse_samples <- NULL; mouse_samples <- names(alldata_bysample)[grep(name_pattern, names(alldata_bysample))]
 names(mouse_samples) <- mouse_samples
 mouse_samples <- mouse_samples[(order(names(mouse_samples)))]
 
 barcodes <- NULL;       # Identifiers to be included in Barcode Table
-# for (mouse_sampl in mouse_samples[-grep(parent_sample, mouse_samples)] ) {
-#   barcodes <- union(barcodes, unique(alldata_bysample[[mouse_sampl]][,1]))
-# }
+
 for (mouse_sampl in mouse_samples){
   if (mouse_sampl != parent_sample)
     barcodes <- union(barcodes, alldata_bysample[[mouse_sampl]][,1])
 }
-barcodes <- sort(barcodes) # Sorting Identifiers/IDs in alphabetically (which matches their numbering).
+
+barcodes <- barcodes[barcodes %in% alldata_bysample[[parent_sample]][, 1]] # exluding non-parental (orphan barcodes)
+barcodes <- sort(barcodes) # Sorting Identifiers/IDs alphabetically (which matches their numbering).
 
 master_barcode_table <- NULL; master_barcode_table <- as.data.frame(matrix(nrow = length(mouse_samples), ncol = 0, dimnames = list( mouse_samples, NULL ) ))               # Table of all barcodes. Each row will be a sample and each column will be a mutant allele. The value in each cell shows the frequency of the corresponding mutant allele in the corresponding sample.
 for (bc in barcodes) {
@@ -598,6 +602,10 @@ sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
 file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
 write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
 
-
+# barcode_table <- read.table(file = '/Users/Kian/Barcode Evolution/200511_NatProt/200923_test/MARC1-Pipeline_copiedFromGithub/4-pair_filtering/2020-09-23_BarcodeTable.txt',
+#                                      , check.names = FALSE)
+# barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
+# dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
+# plot(dendrogram)
 
 
