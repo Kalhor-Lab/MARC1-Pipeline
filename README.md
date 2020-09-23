@@ -74,7 +74,7 @@ For each sample, this step generates:
   $ Rscript 200514_filter-spacers.R
   ```
   
-## 4 Filtering identifier-spacer pairs, reporting on mutation levels & creating full barcode tables.
+## 4 Filtering identifier-spacer pairs, reporting on mutation levels & creating full barcode tables
 
 The script _4-pair_filtering/200514_Final-filtering.R_ starts with the sequencing error-corrected files in 3-SP_err_correction (including the PB3 and PB7 founders) and performs the following:
 1) Filters out samples with low coverage (MinRd criterion)
@@ -91,7 +91,8 @@ This code needs two data files to function properly: _INUSE_AllPB-BarcodesMaster
 Filtering as presented here is subjective; parameters were designed based on our experience and current best understanding of error correction tactics. All parameters are contained within the code and can be modified. 
 
 
-**PB3 and PB7 differences** Specific corrections are based on known particularities of the PB3 and PB7 sequences, and thus lineage should be specified accordingly. 
+**PB3 and PB7 differences** 
+Specific corrections are based on known particularities of the PB3 and PB7 sequences. Additionally, hgRNA sequences in the PB3 and PB7 founders is used to determine whether sequences observed in other samples are mutated or not. Therefore founder strain should be specified accordingly.
 
 Change the at the top of "/4-pair_filtering/200514_Final-Filtering.R" for your use case.
 
