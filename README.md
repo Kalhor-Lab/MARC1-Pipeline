@@ -110,20 +110,22 @@ Then run:
   $ cd ../4-pair_filtering
   $ Rscript Final-filtering.R
   ```
+The above commands run the script in batch mode. For users that are familiar with R Studio or R GUI, we recommend running this script interactively using these interfaces to adjust the code according to their needs.
+
 **Truncated or orphan barcodes** In some experiments, some errors in IDs cannot be resolved by automatic filtering and need to be manually accounted for (orphan barcodes). Running "/4-pair_filtering/Final-Filtering.R" will print such IDs in stdout.  To identify the parents of orphan barcodes, you can extract their corresponding spacer sequence from the allbarcodes.txt file in "/3-SP_err_correction/" to determine which of the founder spacers they resemble the most. If you can identify the parents of the orphan barcodes, populate the following vectors (located at the top section of the code) with pairs of orphan barcodes and their real parent barcode and run the code again. If you cannot identify the parent of an orphan barcode, add its identifier to the spurious_barcodes vector to remove it from analysis.
 ```
 trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', '[orphan_barcode_2]', ...)
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 ```
 
-**Clustering the full barcode table** A full barcode table is created (yyyy-mm-dd_BarcodeTable.txt) and written to file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run:
+**Clustering the full barcode table** A full barcode table is created (yyyy-mm-dd_BarcodeTable.txt) and written to file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run (in R):
 ```
-barcode_table <- read.table(file = 'analysis/4-pair_filtering/2020-09-23_BarcodeTable.txt', check.names = FALSE)
+barcode_table <- read.table(file = 'analysis/4-pair_filtering/yyyy-mm-dd_BarcodeTable.txt', check.names = FALSE)
 barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
 dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
 plot(dendrogram)
 ```
-Note that the unresolved identifiers (orphan barcodes) are excluded from the barcode table.
+Note that the unresolved identifiers (orphan barcodes) are excluded from the barcode table. The barcode_table object is also automatically generated in the end of Final-filtering.R script.
 
 # Technical troubleshooting
 
