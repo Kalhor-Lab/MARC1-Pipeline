@@ -602,6 +602,9 @@ sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
 file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
 write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
 
-barcode_table <- master_barcode_table[,-grep("par", colnames(master_barcode_table))]  #This barcode_table can be used for clustering.
-
+barcode_table <- master_barcode_table  
+barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
+#This barcode_table can be used for clustering, for example:
+  #dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
+  #plot(dendrogram)
 
