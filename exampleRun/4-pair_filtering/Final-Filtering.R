@@ -602,4 +602,5 @@ sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
 file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
 write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
 
+barcode_table <- master_barcode_table[,-grep("par", colnames(master_barcode_table))]  #This barcode_table can be used for clustering.
 
