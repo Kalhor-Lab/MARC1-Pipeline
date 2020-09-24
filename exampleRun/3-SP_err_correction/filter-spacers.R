@@ -51,7 +51,7 @@ for (file1 in files1) {
     true_pairs <- as.data.frame(matrix(nrow=1, ncol=ncol(raw_pairs)))                                 #This table will store the processed barcode-spacer counts for those pairs that either the spacer or the barcode have not been properly matched to their true barcode and spacers
     
     ## Consolidating the spacers for each barcode
-    print(paste("         ", sample_name, "spacers", Sys.time(), sep = " "))
+    print(paste("          ", sample_name, "spacers", Sys.time(), sep = " "))
     for (bc in names(trbc_pairs)) {
         true_spacers_this_bc <- as.data.frame(matrix(nrow=1, ncol=ncol(raw_pairs) - 1));
         #########################################################################################
