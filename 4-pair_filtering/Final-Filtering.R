@@ -602,10 +602,4 @@ sink(file = file1name, append = TRUE); cat("\n\n\n"); sink();
 file2name <- paste(Sys.Date(), "_", 'BarcodeTable', '.txt', sep = "")
 write.table(master_barcode_table, file = file2name, append = FALSE, sep = "\t")
 
-# barcode_table <- read.table(file = '/Users/Kian/Barcode Evolution/200511_NatProt/200923_test/MARC1-Pipeline_copiedFromGithub/4-pair_filtering/2020-09-23_BarcodeTable.txt',
-#                                      , check.names = FALSE)
-# barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
-# dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
-# plot(dendrogram)
-
 
