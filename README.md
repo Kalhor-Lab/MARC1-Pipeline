@@ -118,12 +118,13 @@ trunc_barcodes      <- c()          # trunc_barcodes <- c('[orphan_barcode_1]', 
 trunc_barcodes_refs <- c()          # trunc_barcodes_refs <- c('[parental_barcode_for_orphan_barcode_1]', '[parental_barcode_for_orphan_barcode_2]', ...)
 ```
 
-**Clustering the full barcode table** A full barcode table is created (yyyy-mm-dd_BarcodeTable.txt) and written to file. In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run (in R):
+**Clustering the full barcode table** A full barcode table is created and written to a file (yyyy-mm-dd_BarcodeTable.txt). In this table, each row corresponds to a sample and each column to a spacer allele. The value in each cells represents the abundance of the corresponding spacer allele in the sample. This table can be clustered to obtain a preliminary tree. For instance, for basic clustering based on Manhattan distances run (in R):
 ```
 barcode_table <- read.table(file = 'analysis/4-pair_filtering/yyyy-mm-dd_BarcodeTable.txt', check.names = FALSE)
 barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Removing the parental alleles from the table.
-dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
-plot(dendrogram)
+manhattan_distance_matrix <- dist(barcode_table, method = "manhattan")   # Calculating Manhattan (L1) distances of all samples' full barcodes.
+dendrogram <- as.dendrogram(hclust(manhattan_distance_matrix, method = "ward.D2")) # Clustering samples based on full-barcode Manhattan distance to create a dendrogram.
+plot(dendrogram)    # Plotting the clustering results as a dendrogram.
 ```
 Note that the unresolved identifiers (orphan barcodes) are excluded from the barcode table. The barcode_table object is also automatically generated in the end of Final-filtering.R script.
 
