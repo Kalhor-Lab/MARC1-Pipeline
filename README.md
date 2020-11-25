@@ -108,7 +108,7 @@ For PB3:
 Then run:
   ```
   $ cd ../4-pair_filtering
-  $ Rscript Final-filtering.R
+  $ Rscript Final-Filtering.R
   ```
 The above commands run the script in batch mode. For users that are familiar with R Studio or R GUI, we recommend running this script interactively using these interfaces to adjust the code according to their needs.
 
