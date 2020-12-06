@@ -125,9 +125,9 @@ foreach (my $i = 0; $i <= $#R1seqs; $i++) {
 							
 
 							## Determining the position of the spacer in R1 based on $prespacer_sequence
-							my $spacer_search = index($read2, $prespacer_sequence_short);							# Searching for a perfect match to the pre-spacer sequence. The short version is being used to speed up the search.
+							my $spacer_search = index($read1, $prespacer_sequence_short);							# Searching for a perfect match to the pre-spacer sequence. The short version is being used to speed up the search.
 							if ($spacer_search > -1) {														# There is a perfect match to the prespacer_sequence
-								$spacer = substr($read1, $spacer_search + length($prespacer_sequence_short), $read1_spacer[1]);			# Extracting the Spacer region from Read 1.
+								$spacer = substr($read1, $spacer_search + length($prespacer_sequence_short)-1, $read1_spacer[1]);			# Extracting the Spacer region from Read 1.
 							} else {																		# There is no exact match to the prespacer_sequence and a more time consuming but thorough search is needed. The full prespacer_sequence will be used.							
 								my @spacer_alignments1 = blat($read1, $prespacer_sequence);						# Since I put only one query in, I expect the blat output to have only one line which is stored in the first element of the array. In the line below, I extract that first element into a second array.
 								if (@spacer_alignments1) {
