@@ -107,7 +107,7 @@ for (file1 in files1) {
   if (Founder == "PB7" && ("TACACCTGCA" %in% pairs$V1)) {                                             # This manual adjustment should be applied to ALL PB7 line samples (reason in the line below).
     pairs[pairs$V1 == "TACACCTGCA",1] <- "GGCCCCTACA"                                                 # Because PB7 line barcode GGCCCCTACA matches the end of the reverse amplification primer, the primer can bind the GGCCCC sequence and make it appear the barcode is TACACCTGCA (end of the actual barcode truncated to the post-barcode sequence of the construct).
     pairs <- aggregate(V3~V1+V2, pairs, sum)
-    sink(file = filename_text, append = TRUE); cat(paste("Converted TACACCTGCA to GGCCCCTACA", "because it is a known primer mishybridization result \n", sep = "")); sink();
+    sink(file = filename_text, append = TRUE); cat(paste("Converted TACACCTGCA to GGCCCCTACA", " because it is a known primer mishybridization result \n", sep = "")); sink();
   }
   
   ## Applying length-based filters    (in some rare samples short spacers have been observed which probably means a large deletion extending to the primer)
@@ -607,3 +607,4 @@ barcode_table <- barcode_table[,-grep("par", colnames(barcode_table))]   # Remov
 #This barcode_table can be used for clustering, for example:
   #dendrogram <- as.dendrogram(hclust(dist(barcode_table, method = "manhattan"), method = "ward.D2"))
   #plot(dendrogram)
+
