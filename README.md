@@ -1,7 +1,7 @@
  
 # MARC1 analysis pipeline
 
-This is a pipeline for analysis of MARC1 genotyping data, originally described in [Developmental barcoding of whole mouse via homing CRISPR](https://science.sciencemag.org/content/361/6405/eaat9804.long) and detailed in a forthcoming protocols paper. It was designed to run on a Unix-based system, and has been tested on OSX and Fedora 31. 
+This is a pipeline for analysis of MARC1 genotyping data, originally described in [Developmental barcoding of whole mouse via homing CRISPR](https://science.sciencemag.org/content/361/6405/eaat9804.long) and further detailed in a recent protocols publication, [Lineage barcoding in mice with homing CRISPR](https://www.nature.com/articles/s41596-020-00485-y). It was designed to run on a Unix-based system, and has been tested on OSX and Fedora 31. 
 
 The pipeline compiles paired-end reads and filters sequencing errors to prepare the output of Illumina sequencing data for genotyping or more in-depth barcoding analysis. It runs entirely from the terminal and relies on a combination of Perl, the R programming language, and a small number of specific R packages.
 
