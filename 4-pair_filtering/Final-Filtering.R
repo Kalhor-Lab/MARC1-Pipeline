@@ -528,7 +528,10 @@ for (sampl in names(alldata_bysample)) {
     if (!is.null(alldata_bybarcode_bysample[[bc]][[parent]]) ) {                                         # This is to skip  barcodes that have only been seen in the samples but not in the parent.
       for (wt in 1:nrow(alldata_bybarcode_bysample[[bc]][[parent]])) {
         partial_rate <- append(partial_rate, round(sum(this_table[,4][stringdist(this_table[,2], alldata_bybarcode_bysample[[bc]][[parent_sample]][wt,2], method = "hamming") <= max_dist_spacer]), digit = 2))
-        this_table <- this_table[-which(stringdist(this_table[,2], alldata_bybarcode_bysample[[bc]][[parent_sample]][wt,2], method = "hamming") <= max_dist_spacer),]              # This line removes the spacers that were analyzed, should the parent_sample  have multiple wt spacers, so that one spacer in sampl won't get counted multiple times, each time against a different parent_sample spacer.
+        matched_pairs <- which(stringdist(this_table[,2], alldata_bybarcode_bysample[[bc]][[parent_sample]][wt,2], method = "hamming") <= max_dist_spacer)                          #This line prevents an error if there is no matching pair to wt.
+        if (length(matched_pairs) > 0 ) {
+          this_table <- this_table[-matched_pairs,]              # This line removes the spacers that were analyzed, should the parent_sample  have multiple wt spacers, so that one spacer in sampl won't get counted multiple times, each time against a different parent_sample spacer.
+        }
       }
       mutations[[sampl]] <- append(mutations[[sampl]], 100 - sum(partial_rate))
       names(mutations[[sampl]])[length(mutations[[sampl]])] <- bc
